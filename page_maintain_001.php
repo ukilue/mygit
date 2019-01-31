@@ -9,26 +9,18 @@
 <script src="/resource/js/jqgrid.cus.js"></script>
 <script>
 jQuery(getdata(""));
-jQuery(function($) {			
-	$( "#datepicker" ).datepicker({
-		showOtherMonths: true,
-		selectOtherMonths: false,
-		dateFormat: 'yy/mm/dd',
-	});	
-	$( "#datepicker" ).zIndex(1000);
-});
-function ChangeData()
+function SelectData()
 {
-	var sdate = $("#datepicker").val();
+	var sKeyword = $("#keyword").val();
 	jQuery("#grid-table").jqGrid("clearGridData");
-	getdata(sdate);
+	getdata(sKeyword);
 	//jQuery("#grid-table").trigger("reloadGrid");
 }
-function getdata(sdate) {
+function getdata(sKeyword) {
 	$.ajax({
 		type : "POST", cache : false, dataType : "json",
 		url: "/proc_maintain_001.php",
-		data: {	func:'query'},
+		data: {	func:'query', keyword:sKeyword},
 		success: function (data) {	
 			//alert(data);
 			loadGrid(data);
@@ -242,11 +234,11 @@ function submit_add() {
 			<div class="row" style="margin-bottom:20px;">
 				<div class="col-xs-6 col-sm-6 col-md-2 col-lg-2">
 					<div class="input-group input-group-sm" style="min-width:200px;">
-						<input type="text" id="datepicker" class="form-control" placeholder="請點選日期" style="font-size:16px;height:40px;">
+						<input type="text" id="keyword" class="form-control" placeholder="輸入關鍵字" style="font-size:16px;height:40px;">
 						<span class="input-group-addon">
-							<i class="ace-icon fa fa-calendar"></i>
+							<i class="ace-icon fa fa-pencil-square-o"></i>
 						</span>
-						<button type="button" class="width-100 pull-right btn btn-sm btn-primary" style="margin-left:10px;height:40px;" onclick="ChangeData();">
+						<button type="button" class="width-100 pull-right btn btn-sm btn-primary" style="margin-left:10px;height:40px;" onclick="SelectData();">
 							<span class="bigger-110">查詢</span>
 						</button>
 					</div>
