@@ -1,7 +1,7 @@
 <?php
 	require_once 'db_config.php'; 
 	
-	$func = $_POST["func"];
+	$func = $_REQUEST["func"];
 	//$conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password, array(PDO::MYSQL_ATTR_INIT_COMMAND => "set names utf8"));
 	$conn = new PDO("sqlsrv:Server=$host;Database=$dbname",$username, $password);
 	$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -40,7 +40,54 @@
 	}
 	else if ($func == 'modify')
 	{
-		//更新資料
+		$oper = $_POST["oper"];
+		if ($oper=='edit')
+		{
+			try
+			{
+				//jqgrid 編輯時
+				$stmt = $conn->prepare(
+						" UPDATE momo_PkgOwner SET Phone=:Phone,CellPhone=:CellPhone,Country=:Country,Address=:Address,CompanyID=:CompanyID,CustomerID=:CustomerID ".
+						" ,Notes=:Notes WHERE Name=:Name "
+						
+						/*" UPDATE DeliveryData SET Date=:Date, TradeType=:TradeType,CustomerID=:CustomerID,PkgOwner1=:PkgOwner1,PkgOwner2=:PkgOwner2,Terminal=:Terminal, " .
+						" PkgCount=:PkgCount,Unit=:Unit,Weight=:Weight,Volume='0',Note='0',ShipName='0',SO='0',CloseDate='0' WHERE GUID='2' "*/
+						);
+				$stmt->bindParam(':Name', $_POST['Name']);
+				$stmt->bindParam(':Phone', $_POST['Phone']);
+				$stmt->bindParam(':CellPhone', $_POST['CellPhone']);
+				$stmt->bindParam(':Country', $_POST['Country']);
+				$stmt->bindParam(':Address', $_POST['Address']);
+				$stmt->bindParam(':CompanyID', $_POST['CompanyID']);
+				$stmt->bindParam(':CustomerID', $_POST['CustomerID']);
+				$stmt->bindParam(':Notes', $_POST['Notes']);
+				
+				$result = $stmt->execute();
+				//$stmt->closeCursor();
+			
+			}
+			catch (PDOException $error) 
+			{
+				echo 'connect failed:'.$error->getMessage();
+			}
+		}
+		else if ($oper == 'del')
+		{
+			//jqgrid 刪除時
+			try
+			{
+				$stmt = $conn->prepare(
+						" DELETE FROM momo_PkgOwner WHERE Name=:Name "
+						);
+				$stmt->bindParam(':Name', $_POST['id']);
+				
+				$result = $stmt->execute();
+			}
+			catch (PDOException $error) 
+			{
+				echo 'connect failed:'.$error->getMessage();
+			}
+		}
 	}
 	else if ($func == 'query')
 	{
@@ -48,12 +95,11 @@
 		try
 		{
 			$stmt = $conn->prepare(
-					" SELECT Name, Phone, CellPhone, Country, Address, CompanyID, CustomerID, Notes FROM momo_PkgOwner "
+					" SELECT Name, Phone, CellPhone, Country, Address, CompanyID, CustomerID, Notes FROM momo_PkgOwner " .
+					" WHERE Name like '%'+ :Name +'%' "
 					);
-			/*$date = $_POST['date'];
-			if ($date == "") $date = date('Y/m/d');
-			$stmt->bindParam(':date', $date);
-			*/
+			$stmt->bindParam(':Name', $_POST['keyword']);
+			
 			$result = $stmt->execute();
 			$data = array();
 			
