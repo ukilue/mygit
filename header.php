@@ -52,16 +52,36 @@
 						';
 						break;
 					case '002':
-						echo '';
+						echo  
+						'
+							<link rel="stylesheet" href="assets/css/jquery-ui.min.css" />
+							<link rel="stylesheet" href="assets/css/bootstrap-datepicker3.min.css" />
+							<link rel="stylesheet" href="assets/css/ui.jqgrid.min.css" />
+						';
 						break;
 					case '003':
-						echo '';
+						echo  
+						'
+							<link rel="stylesheet" href="assets/css/jquery-ui.min.css" />
+							<link rel="stylesheet" href="assets/css/bootstrap-datepicker3.min.css" />
+							<link rel="stylesheet" href="assets/css/ui.jqgrid.min.css" />
+						';
 						break;
 					case '004':
-						echo '';
+						echo  
+						'
+							<link rel="stylesheet" href="assets/css/jquery-ui.min.css" />
+							<link rel="stylesheet" href="assets/css/bootstrap-datepicker3.min.css" />
+							<link rel="stylesheet" href="assets/css/ui.jqgrid.min.css" />
+						';
 						break;
 					case '005':
-						echo '';
+						echo  
+						'
+							<link rel="stylesheet" href="assets/css/jquery-ui.min.css" />
+							<link rel="stylesheet" href="assets/css/bootstrap-datepicker3.min.css" />
+							<link rel="stylesheet" href="assets/css/ui.jqgrid.min.css" />
+						';
 						break;
 				}
 			}elseif($action == 'query'){
