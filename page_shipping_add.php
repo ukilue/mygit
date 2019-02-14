@@ -32,6 +32,7 @@ function DataLoaded(data)
 	var divType0 = $("#div_Type0");
 	var divType1 = $("#div_Type1");
 	var input_DeliveryGUID = $("#DeliveryGUID");	
+	var input_DeliveryDate = $("#DeliveryDate");
 	var input_TradeType = $("#TradeType");
 	var input_CustomerID = $("#CustomerID");
 	var input_CustomerName = $("#CustomerName");
@@ -113,6 +114,7 @@ function submit_save()
 	//alert("Type="+Type);
 	
 	var DeliveryGUID = $.trim($("#DeliveryGUID").val());	//送貨單編號
+	var DeliveryDate = $.trim($("#DeliveryDate").val());	//客戶
 	var CustomerID = $.trim($("#CustomerID").val());	//客戶
 	var PkgCount = $.trim($("#PkgCount").val());		//件數
 	var Unit = $.trim($("#Unit").val());				//單位
@@ -121,6 +123,7 @@ function submit_save()
 	var Terminal = $.trim($("#Type"+Type+"_Terminal").val());		//貨櫃場
 	var PkgOwner1 = $.trim($("#Type"+Type+"_PkgOwner1").val());		//貨主1
 	var PkgOwner2 = $.trim($("#Type"+Type+"_PkgOwner2").val());		//貨主2
+	var PkgOwner3 = $.trim($("#Type"+Type+"_PkgOwner3").val());		//貨主2
 	var Country1 = $.trim($("#Type"+Type+"_Country1").val());		//貨主地點1
 	var Country2 = $.trim($("#Type"+Type+"_Country2").val());		//貨主地點2
 	var Dirver1 = $.trim($("#Type"+Type+"_Dirver1").val());			//司機1
@@ -137,7 +140,7 @@ function submit_save()
 	$.ajax({
 		type : "POST", cache : false, dataType : "text",
 		url: "/proc_shipping_add.php",
-		data: {	func:'add',TradeType:Type,CustomerID:CustomerID,DeliveryGUID:DeliveryGUID,PkgCount:PkgCount,Unit:Unit,Weight:Weight,
+		data: {	func:'add',TradeType:Type,DeliveryDate:DeliveryDate,CustomerID:CustomerID,DeliveryGUID:DeliveryGUID,PkgCount:PkgCount,Unit:Unit,Weight:Weight,
 				Volume:Volume,Terminal:Terminal,PkgOwner1:PkgOwner1,PkgOwner2:PkgOwner2,Country1:Country1,Country2:Country2,Notes:Notes,
 				Dirver1:Dirver1,Dirver2:Dirver2,CarType1:CarType1,CarType2:CarType2,Price1:Price1,Price2:Price2},
 		success: function (data) {						
@@ -169,33 +172,32 @@ function submit_save()
 ?>
 	</datalist>
 	<p>
-		送貨單編號：<input type="text" id="DeliveryGUID" size="10px" disabled>&nbsp;
-		載運類型：<input type="text" id="TradeType" disabled>
+		送貨單編號：<input type="text" id="DeliveryGUID" size="5px" disabled>&nbsp;
+		載運類型：<input type="text" id="TradeType" size="5px" disabled>
 	</p>
 	<p>
-		客戶：<input type="text" id="CustomerID" disabled>&nbsp;
-		客戶名稱：<input type="text" id="CustomerName" disabled>
+		日期：<input type="text" id="DeliveryDate" size="5px" disabled>&nbsp;
+		客戶：<input type="text" id="CustomerID" size="5px" disabled>&nbsp;
+		客戶名稱：<input type="text" id="CustomerName" size="8px" disabled>
 	</p>
 	<fieldset>
 		<legend>貨物資料</legend>
 		<p>
-			件數：<input type="text" id="PkgCount" disabled>&nbsp;
-			單位：<input type="text" id="Unit" disabled>
-		</p>	
-		<p>
-			重量(kg)：<input type="text" id="Weight" disabled>&nbsp;
-			材積：<input type="text" id="Volume" disabled>
+			件數：<input type="text" id="PkgCount" size="3px" disabled>&nbsp;
+			單位：<input type="text" id="Unit" size="3px" disabled>&nbsp;
+			重量(kg)：<input type="text" id="Weight" size="3px" disabled>&nbsp;
+			材積：<input type="text" id="Volume" size="3px" disabled>
 		</p>
+		<p>起運(貨櫃場)：<input type="text" id="Type0_Terminal" size="5px"  disabled></p>
 	</fieldset>
 	
 	<fieldset>
 		<legend>運送資料設定</legend>
 		<!--進口-->
 		<div id="div_Type0" style="display:inline">
-			<p>起運(貨櫃場)：<input type="text" id="Type0_Terminal" disabled></p>
 			<p>
-				到達(貨主1)：<input type="text" id="Type0_PkgOwner1" disabled>&nbsp;
-				送貨地點：<input type="text" id="Type0_Country1" value="" disabled>
+				貨主(到達1)：<input type="text" id="Type0_PkgOwner1" size="5px" disabled>&nbsp;
+				送貨地點：<input type="text" id="Type0_Country1" size="5px" value="" disabled>
 			</p>
 			<div id="div_Owner2" style="display:inline">
 				<p>
