@@ -17,6 +17,13 @@ jQuery(function($) {
 		dateFormat: 'yy/mm/dd',
 	});	
 	$( "#datepicker" ).zIndex(1000);
+	var today = new Date();
+	var day = today.getDate();
+	if (day <10) day = "0"+day;
+	var month = today.getMonth()+1;
+	if (month <10) month = "0"+month;
+	var year = today.getFullYear();
+	$( "#datepicker" ).val(year+"/"+month+"/"+day);
 });
 function ChangeData()
 {
@@ -63,9 +70,9 @@ function loadGrid (g_data) {
 		data: g_data,
 		datatype: "local",
 		height: 350,
-		colNames:['維護', 'GUID','日期','進出口', '客戶', '貨主1','貨主2','貨櫃場','數量','單位','重量','材積','備註','船名','SO','結關日'],
+		colNames:['維護', 'GUID','日期','進出口', '客戶', '貨主','貨櫃場','件數','單位','重量','材積','備註','船名','SO','結關日'],
 		colModel:[
-			{name:'mfunc',index:'', width:50, resize:true,
+			{name:'mfunc',index:'', width:30, resize:true,
 				formatter:'actions', 
 				//formatter: buttonFormatter, 
 				formatoptions:{ 
@@ -76,18 +83,17 @@ function loadGrid (g_data) {
 					//editformbutton:true 
 				}
 			},
-			{name:'GUID',index:'GUID', width:50, editable: false, key:true},
-			{name:'Date',index:'Date',width:60, editable:true, editoptions:{size:"10",maxlength:"10"}},
+			{name:'GUID',index:'GUID', width:50, editable: false, key:true, hidden:true},
+			{name:'Date',index:'Date',width:35, editable:true, editoptions:{size:"8",maxlength:"10"}},
 			{name:'TradeType',index:'TradeType', width:30, editable: true, edittype:"select", editoptions:{value:"0:進口;1:出口"}},
-			{name:'CustomerID',index:'CustomerID', width:30, editable: true, editoptions:{size:"5",maxlength:"5"}},
-			{name:'PkgOwner1',index:'PkgOwner1', width:30, editable: true, editoptions:{size:"8",maxlength:"8"}},
-			{name:'PkgOwner2',index:'PkgOwner2', width:30, editable: true, editoptions:{size:"8",maxlength:"8"}},
+			{name:'CustomerID',index:'CustomerID', width:20, editable: true, editoptions:{size:"5",maxlength:"5"}},
+			{name:'PkgOwner',index:'PkgOwner', width:30, editable: true, editoptions:{size:"8",maxlength:"8"}},
 			{name:'Terminal',index:'Terminal', width:30, editable: true, editoptions:{size:"8",maxlength:"8"}},
-			{name:'PkgCount',index:'PkgCount', width:30, editable: true, editoptions:{size:"5",maxlength:"5"}},
-			{name:'Unit',index:'Unit', width:30, editable: true, editoptions:{size:"5",maxlength:"5"}},
-			{name:'Weight',index:'Weight', width:30, editable: true, editoptions:{size:"5",maxlength:"5"}},
-			{name:'Volume',index:'Volume', width:30, editable: true, editoptions:{size:"5",maxlength:"5"}},
-			{name:'Note',index:'Note', width:50, editable: true, editoptions:{size:"10",maxlength:"10"}},
+			{name:'PkgCount',index:'PkgCount', width:20, editable: true, editoptions:{size:"5",maxlength:"5"}},
+			{name:'Unit',index:'Unit', width:20, editable: true, editoptions:{size:"5",maxlength:"5"}},
+			{name:'Weight',index:'Weight', width:20, editable: true, editoptions:{size:"5",maxlength:"5"}},
+			{name:'Volume',index:'Volume', width:20, editable: true, editoptions:{size:"5",maxlength:"5"}},
+			{name:'Note',index:'Note', width:60, editable: true, edittype:'textarea', editoptions:{size:"15",maxlength:"100"}},
 			{name:'ShipName',index:'ShipName', width:30, editable: true, editoptions:{size:"5",maxlength:"5"}},
 			{name:'SO',index:'SO', width:30,editable: true, editoptions:{size:"5",maxlength:"5"}},
 			{name:'CloseDate',index:'CloseDate', width:30, editable: true, editoptions:{size:"10",maxlength:"10"}} 
