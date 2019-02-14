@@ -67,7 +67,8 @@
 					" SELECT TOP(1) GUID,Date,TradeType,CustomerID,(SELECT Name FROM momo_CustomerData WHERE ID = CustomerID) as CustomerName, ". //
 					" PkgOwner1,(SELECT TOP(1) Left(Address,2) FROM momo_PkgOwner WHERE Name = PkgOwner1) as Country1, ".
 					" PkgOwner2,(SELECT TOP(1) Left(Address,2) FROM momo_PkgOwner WHERE Name = PkgOwner2) as Country2, ".
-					" Terminal,PkgCount,Unit,Weight,Volume,Note,ShipName,SO,CloseDate FROM momo_DeliveryData " .
+					" PkgOwner3,(SELECT TOP(1) Left(Address,2) FROM momo_PkgOwner WHERE Name = PkgOwner3) as Country3, ".
+					" Terminal,PkgCount,Unit,Weight,Volume,Note1,Note2,Note3,ShipName,SO,CloseDate FROM momo_DeliveryData " .
 					" WHERE Date=convert(varchar, getdate(),111) AND GUID NOT IN (SELECT DISTINCT DeliveryGUID FROM momo_TransportData) ORDER BY GUID" 
 					//" WHERE Date=CURRENT_DATE() AND GUID NOT IN (SELECT DISTINCT DeliveryGUID FROM TransportData) ORDER BY GUID LIMIT 1 "
 					
