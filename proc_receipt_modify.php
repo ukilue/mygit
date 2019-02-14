@@ -16,8 +16,10 @@
 			{
 				//jqgrid 編輯時
 				$stmt = $conn->prepare(
-						" UPDATE momo_DeliveryData SET Date=:Date,TradeType=:TradeType,CustomerID=:CustomerID,PkgOwner1=:PkgOwner1,PkgOwner2=:PkgOwner2,Terminal=:Terminal, " .
-						" PkgCount=:PkgCount,Unit=:Unit,Weight=:Weight,Volume=:Volume,Note=:Note,ShipName=:ShipName,SO=:SO,CloseDate=:CloseDate WHERE GUID=:GUID ".
+						" UPDATE momo_DeliveryData SET Date=:Date,TradeType=:TradeType,CustomerID=:CustomerID,PkgOwner=:PkgOwner, " .
+						" Terminal=:Terminal,PkgCount=:PkgCount,Unit=:Unit,Weight=:Weight,Volume=:Volume,Note=:Note,ShipName=:ShipName,SO=:SO, ".
+						" CloseDate=:CloseDate ".
+						" WHERE GUID=:GUID ".
 						" DELETE FROM momo_TransportData WHERE DeliveryGUID=:GUID1 "
 						
 						/*" UPDATE DeliveryData SET Date=:Date, TradeType=:TradeType,CustomerID=:CustomerID,PkgOwner1=:PkgOwner1,PkgOwner2=:PkgOwner2,Terminal=:Terminal, " .
@@ -26,8 +28,7 @@
 				$stmt->bindParam(':Date', $_POST['Date']);
 				$stmt->bindParam(':TradeType', $_POST['TradeType']);
 				$stmt->bindParam(':CustomerID', $_POST['CustomerID']);
-				$stmt->bindParam(':PkgOwner1', $_POST['PkgOwner1']);
-				$stmt->bindParam(':PkgOwner2', $_POST['PkgOwner2']);
+				$stmt->bindParam(':PkgOwner', $_POST['PkgOwner']);
 				$stmt->bindParam(':Terminal', $_POST['Terminal']);
 				$stmt->bindParam(':PkgCount', $_POST['PkgCount']);
 				$stmt->bindParam(':Unit', $_POST['Unit']);
@@ -74,7 +75,7 @@
 		try
 		{
 			$stmt = $conn->prepare(
-					" SELECT GUID,Date,(CASE WHEN TradeType = 0 THEN '進口' ELSE '出口' END) as TradeType,CustomerID,PkgOwner1,PkgOwner2, ".
+					" SELECT GUID,Date,(CASE WHEN TradeType = 0 THEN '進口' ELSE '出口' END) as TradeType,CustomerID,PkgOwner, ".
 					" Terminal,PkgCount,Unit,Weight,Volume,Note,ShipName,SO,CloseDate FROM momo_DeliveryData ".
 					" WHERE Date= :date ORDER BY GUID "
 					);
