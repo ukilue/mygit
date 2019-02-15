@@ -18,48 +18,71 @@ function DataLoaded(data)
 {
 	if (data=='')
 	{
-		alert("今日尚未填寫送貨單 或 無下一筆資料需編輯");
-		$("#btn_save").attr('disabled', true);
+		alert("無下一筆資料需編輯");
+		/*$("#btn_save").attr('disabled', true);
 		$("#Type0_Dirver1").attr('disabled', true);
 		$("#Type0_Dirver2").attr('disabled', true);
 		$("#Type1_Dirver1").attr('disabled', true);
 		$("#Type0_Price1").attr('disabled', true);
 		$("#Type0_Price2").attr('disabled', true);
 		$("#Type1_Price1").attr('disabled', true);
+		*/
 		return;
 	}
-	var TradeType = data[0]['TradeType'];
-	var divType0 = $("#div_Type0");
-	var divType1 = $("#div_Type1");
-	var input_DeliveryGUID = $("#DeliveryGUID");	
-	var input_DeliveryDate = $("#DeliveryDate");
+	var TradeType = data[0]['TradeType'];	//同一編號送貨單應為同一類型(出口或進口)
+	var divType0 = $("#div_Type0");			//進口
+	var divType1 = $("#div_Type1");			//出口
+	//共通資料
+	$("#DeliveryGUID").val(data[0]['GUID']);
+	$("#DeliveryDate").val(data[0]['Date']);
+	$("#CustomerID").val(data[0]['CustomerID']);
+	$("#CustomerName").val(data[0]['CustomerName']);
+	$("#PkgCount").val(data[0]['PkgCount']);
+	$("#Unit").val(data[0]['Unit']);
+	$("#Weight").val(data[0]['Weight']);
+	$("#Volume").val(data[0]['Volume']);
 	var input_TradeType = $("#TradeType");
-	var input_CustomerID = $("#CustomerID");
-	var input_CustomerName = $("#CustomerName");
-	var input_PkgCount = $("#PkgCount");
-	var input_Unit = $("#Unit");
-	var input_Weight = $("#Weight");
-	var input_Volume = $("#Volume");
-	var input_Notes = $("#Notes");
-	var input_Terminal = $("#Type"+TradeType+"_Terminal");
+	
+	
+	//outerDIV
+	var outerdiv = $("#div_Owner");
+	
+	var i;
+	for (i = 0; i < data.length; i++)
+	{
+		outerdiv.append(
+			"<p>" +
+			"	<label name=\"OwnerLabel[]\">貨主(到達"+(i+1)+")：</label><input type=\"text\" id=\"Type0_PkgOwner\""+(i+1)+" name=\"Owner[]\" size=\"5px\" value=\""+data[i]['PkgOwner']+"\" disabled>&nbsp; " +
+			"	送貨地點：<input type=\"text\" id=\"Type0_Country\""+(i+1)+" name=\"OwnerPlace[]\" size=\"5px\" value=\""+data[i]['Country']+"\" disabled>&nbsp; "+
+			"	備註：<input type=\"text\" id=\"Type0_Notes\""+(i+1)+" name=\"OwnerNotes[]\" size=\"5px\" value=\""+data[i]['Note']+"\" disabled>&nbsp; "+
+			"	<button type=\"button\" name=\"BtnAddDriver[]\" onclick=\"AddDriver('"+(i+1)+"')\" >新增司機</button> "+
+			"</p>"+
+			"<div id=\"div_Driver"+(i+1)+"\"></div>"
+		);
+	}
+	/*
 	var input_PkgOwner1 = $("#Type"+TradeType+"_PkgOwner1");
 	var input_Country1 = $("#Type"+TradeType+"_Country1");
 	var input_esPrice1 = $("#Type"+TradeType+"_esPrice1");
 	var input_PkgOwner2 = $("#Type"+TradeType+"_PkgOwner2");
 	var input_Country2 = $("#Type"+TradeType+"_Country2");
 	var input_esPrice2 = $("#Type"+TradeType+"_esPrice2");
+	*/
 	if (TradeType=='0')
 	{
 		input_TradeType.val('進口');
+		$("#Type0_Terminal").val(data[0]['Terminal']);
 		divType0.show();
 		divType1.hide();
 	}
 	else if (TradeType=='1')
 	{
 		input_TradeType.val('出口');
+		$("#Type1_Terminal").val(data[0]['Terminal']);
 		divType0.hide();
 		divType1.show();
 	}
+	/*
 	if (input_PkgOwner2.val()=="")	//沒有第二個owner
 	{
 		var divOwner2 = $("#div_Owner2");
@@ -80,10 +103,58 @@ function DataLoaded(data)
 	input_Country1.val(data[0]['Country1']);
 	input_PkgOwner2.val(data[0]['PkgOwner2']);
 	input_Country2.val(data[0]['Country2']);
+	*/
 	//alert(TradeType);
 	//alert(data[0]['GUID']);
 	
 	//alert("Country1="+data[0]['Country1']+"Country2="+data[0]['Country2']+"Volume="+data[0]['Volume']);
+}
+function AddDriver(pkgnum)
+{
+	var outerdiv = $("#div_Driver"+pkgnum);
+	var Drivers = document.getElementsByName("Dirver[]");
+	var DriverNum = Drivers.length + 1;
+	outerdiv.append(
+		"<div id=\"Owner"+pkgnum+"_Driver"+DriverNum+"\">
+		"	<p>" +
+		"		<button type=\"button\" name=\"BtnDelDriver"+pkgnum+"[]\" onclick=\"DelDriver('"+pkgnum+"','"+DriverNum+"')\" >刪除</button> " +
+		"		司機：<input type=\"text\" list=\"Driver\" id=\"Type0_Dirver1\" name=\"Dirver"+pkgnum+"[]\" >&nbsp; "+
+		"		車種：<input type=\"text\" id=\"Type0_CarType1\" name=\"CarType"+pkgnum+"[]\" onchange=\"CarTypeChanged('Type0_Country1','Type0_CarType1','Type0_esPrice1');\">&nbsp; "+
+		"		金額：<input type=\"text\" id=\"Type0_Price1\" name=\"Price"+pkgnum+"[]\" >&nbsp; "+
+		"		預估金額：<input type=\"text\" id=\"Type0_esPrice1\" name=\"esPrice"+pkgnum+"[]\" disabled> "+
+		"	</p>"+
+		"</div>"
+	);
+}
+function DelDriver(pkgnum,DriverNum)
+{
+	var outerdiv = $("#div_Driver"+pkgnum);
+	var driverDiv = $("#Owner"+pkgnum+"_Driver"+DriverNum);
+	driverDiv.remove();
+	//重新設定html
+	var Drivers = document.getElementsByName("Dirver[]");
+	var i;
+	for (i = 0; i < Drivers.length; i++)
+	{
+		var OwnerDiv = document.getElementsByName("OwnerDiv[]");
+		var OwnerLabel = document.getElementsByName("OwnerLabel[]");
+		var Owners = document.getElementsByName("Owner[]");
+		var OwnerBtn = document.getElementsByName("OwnerBtn[]");
+		var OwnerPhone = document.getElementsByName("OwnerPhone[]");
+		var OwnerCellphone = document.getElementsByName("OwnerCellphone[]");
+		var OwnerPlace = document.getElementsByName("OwnerPlace[]");
+		var OwnerNotes = document.getElementsByName("OwnerNotes[]");
+		OwnerDiv[i].setAttribute("id", "div_Pkgowner" + (i+1));
+		OwnerLabel[i].innerHTML = "貨主(到達"+(i+1)+")：";
+		Owners[i].setAttribute("id", "Type0_PkgOwner" + (i+1));
+		Owners[i].setAttribute("onchange", "func_ownerchanged(this, '0','"+(i+1)+"')");
+		OwnerBtn[i].setAttribute("id", "Type0_OwnerBtn" + (i+1));
+		OwnerBtn[i].setAttribute("onchange", "func_removeOwner('"+(i+1)+"')");
+		OwnerPhone[i].setAttribute("id", "Type0_OwnerPhone" + (i+1));
+		OwnerCellphone[i].setAttribute("id", "Type0_OwnerCellphone" + (i+1));
+		OwnerPlace[i].setAttribute("id", "Type0_OwnerPlace" + (i+1));
+		OwnerNotes[i].setAttribute("id", "Type0_OwnerNotes" + (i+1));
+	}
 }
 function CarTypeChanged(txt_Country, txt_CarType, txt_esPrice)
 {
@@ -176,7 +247,7 @@ function submit_save()
 		載運類型：<input type="text" id="TradeType" size="5px" disabled>
 	</p>
 	<p>
-		日期：<input type="text" id="DeliveryDate" size="5px" disabled>&nbsp;
+		日期：<input type="text" id="DeliveryDate" size="10px" disabled>&nbsp;
 		客戶：<input type="text" id="CustomerID" size="5px" disabled>&nbsp;
 		客戶名稱：<input type="text" id="CustomerName" size="8px" disabled>
 	</p>
@@ -195,16 +266,20 @@ function submit_save()
 		<legend>運送資料設定</legend>
 		<!--進口-->
 		<div id="div_Type0" style="display:inline">
-			<p>
-				貨主(到達1)：<input type="text" id="Type0_PkgOwner1" size="5px" disabled>&nbsp;
-				送貨地點：<input type="text" id="Type0_Country1" size="5px" value="" disabled>
-			</p>
-			<div id="div_Owner2" style="display:inline">
+			<div id="div_Owner">
+				<!--<p>
+					貨主(到達1)：<input type="text" id="Type0_PkgOwner1" size="5px" disabled>&nbsp;
+					送貨地點：<input type="text" id="Type0_Country1" size="5px" value="" disabled>
+				</p>
+				<div id="div_Driver1"></div>
+				
 				<p>
 					到達(貨主2)：<input type="text"  id="Type0_PkgOwner2" disabled>&nbsp;
 					送貨地點：<input type="text" id="Type0_Country2" value="" disabled>
 				</p>
+				-->
 			</div>
+			<!--
 			<p>
 				司機1：<input type="text" list="Driver" id="Type0_Dirver1">&nbsp;
 				車種1：<input type="text" id="Type0_CarType1" onchange="CarTypeChanged('Type0_Country1','Type0_CarType1','Type0_esPrice1');">&nbsp;
@@ -219,6 +294,8 @@ function submit_save()
 					預估金額2：<input type="text" id="Type0_esPrice2" disabled>
 				</p>
 			</div>
+			
+			-->
 		</div>
 		<!--出口-->
 		<div id="div_Type1" style="display:none">
@@ -233,7 +310,7 @@ function submit_save()
 				金額：<input type="text" id="Type1_Price1">&nbsp;
 				預估金額：<input type="text" id="Type1_esPrice1" disabled>
 			</p>
+			<p>備註：<input type="text" id="Notes" size="50px"></p>
 		</div>
-		<p>備註：<input type="text" id="Notes" size="50px"></p>
 	</fieldset>
 	<button type="button" id="btn_save" onclick="submit_save();">儲存資料&編輯次筆</button>
