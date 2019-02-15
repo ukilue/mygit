@@ -64,12 +64,18 @@
 		try
 		{
 			$stmt = $conn->prepare(
-					" SELECT TOP(1) GUID,Date,TradeType,CustomerID,(SELECT Name FROM momo_CustomerData WHERE ID = CustomerID) as CustomerName, ". //
-					" PkgOwner1,(SELECT TOP(1) Left(Address,2) FROM momo_PkgOwner WHERE Name = PkgOwner1) as Country1, ".
-					" PkgOwner2,(SELECT TOP(1) Left(Address,2) FROM momo_PkgOwner WHERE Name = PkgOwner2) as Country2, ".
-					" PkgOwner3,(SELECT TOP(1) Left(Address,2) FROM momo_PkgOwner WHERE Name = PkgOwner3) as Country3, ".
-					" Terminal,PkgCount,Unit,Weight,Volume,Note1,Note2,Note3,ShipName,SO,CloseDate FROM momo_DeliveryData " .
-					" WHERE Date=convert(varchar, getdate(),111) AND GUID NOT IN (SELECT DISTINCT DeliveryGUID FROM momo_TransportData) ORDER BY GUID" 
+					" SELECT GUID,ID,Date,TradeType,a.CustomerID,(SELECT Name FROM momo_CustomerData WHERE ID = a.CustomerID) as CustomerName, ".
+					" PkgOwner,Left(b.Address,2) as Country,Terminal,PkgCount,Unit,Weight,Volume,Note,ShipName,SO,CloseDate ".
+					" FROM momo_DeliveryData a ".
+					" LEFT JOIN momo_PkgOwner b ".
+					" ON a.PkgOwner = b.Name ".
+					" WHERE ID = ( ".
+					"	SELECT TOP(1) ID ".
+					"	FROM momo_DeliveryData ".
+					"	WHERE GUID NOT IN (SELECT DISTINCT DeliveryGUID FROM momo_TransportData) ".
+					"	GROUP BY ID ".
+					"	ORDER BY ID ".
+					" ) ORDER BY GUID "
 					//" WHERE Date=CURRENT_DATE() AND GUID NOT IN (SELECT DISTINCT DeliveryGUID FROM TransportData) ORDER BY GUID LIMIT 1 "
 					
 					);
