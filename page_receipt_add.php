@@ -1,9 +1,3 @@
-<?php 
-	require_once 'db_config.php'; 
-	//$conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password, array(PDO::MYSQL_ATTR_INIT_COMMAND => "set names utf8"));
-	$conn = new PDO("sqlsrv:Server=$host;Database=$dbname",$username, $password);
-	$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-?>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -146,7 +140,14 @@
 			Owners[i].setAttribute("id", "Type0_PkgOwner" + (i+1));
 			Owners[i].setAttribute("onchange", "func_ownerchanged(this, '0','"+(i+1)+"')");
 			OwnerBtn[i].setAttribute("id", "Type0_OwnerBtn" + (i+1));
-			OwnerBtn[i].setAttribute("onchange", "func_removeOwner('"+(i+1)+"')");
+			if (i==0)
+			{
+				OwnerBtn[i].setAttribute("onclick", "func_addOwner()");				
+			}
+			else
+			{
+				OwnerBtn[i].setAttribute("onclick", "func_removeOwner('"+(i+1)+"')");
+			}
 			OwnerPhone[i].setAttribute("id", "Type0_OwnerPhone" + (i+1));
 			OwnerCellphone[i].setAttribute("id", "Type0_OwnerCellphone" + (i+1));
 			OwnerPlace[i].setAttribute("id", "Type0_OwnerPlace" + (i+1));
@@ -166,18 +167,24 @@
 		var CustomerID = $.trim($("#CustomerID").val());	//客戶
 		var Terminal = $.trim($("#Type"+Type+"_Terminal").val());		//貨櫃場
 		
-		var Owner = document.getElementsByName("Owner[]");				//貨主
 		var PkgOwner = new Array();
-		for(var i=0;i<Owner.length;i++){
-				PkgOwner.push(Owner[i].value);
-		}
-		
-		var OwnerNotes = document.getElementsByName("OwnerNotes[]");	//備註
 		var PkgOwnerNotes = new Array();
-		for(var i=0;i<OwnerNotes.length;i++){
-				PkgOwnerNotes.push(OwnerNotes[i].value);
+		if (Type=="0")
+		{
+			var Owner = document.getElementsByName("Owner[]");				//貨主
+			for(var i=0;i<Owner.length;i++){
+					PkgOwner.push(Owner[i].value);
+			}
+			var OwnerNotes = document.getElementsByName("OwnerNotes[]");	//備註
+			for(var i=0;i<OwnerNotes.length;i++){
+					PkgOwnerNotes.push(OwnerNotes[i].value);
+			}
 		}
-		//var PkgOwner1 = $.trim($("#Type"+Type+"_PkgOwner1").val());		
+		else if (Type=="1")
+		{
+			PkgOwner.push($.trim($("#Type1_PkgOwner1").val()));
+			PkgOwnerNotes.push($.trim($("#Type1_OwnerNotes1").val()));	
+		}	
 		var PkgCount = $.trim($("#Type"+Type+"_PkgCount").val());		//件數
 		var Unit = $.trim($("#Type"+Type+"_Unit").val());				//單位
 		var Weight = $.trim($("#Type"+Type+"_Weight").val());			//重量
@@ -265,7 +272,7 @@
 		<div id="div_Pkgowners">
 			<div id="div_Pkgowner1" name="OwnerDiv[]">
 				<p>
-					<label id="Type0_OwnerLabel">貨主(到達1)：</label><input type="text" list="owners" id="Type0_PkgOwner1" name="Owner[]" onchange="func_ownerchanged(this, '0','1')">&nbsp;
+					<label id="Type0_OwnerLabel" name="OwnerLabel[]">貨主(到達1)：</label><input type="text" list="owners" id="Type0_PkgOwner1" name="Owner[]" onchange="func_ownerchanged(this, '0','1')">&nbsp;
 					<button style="width:30px" id="Type0_OwnerBtn1" name="OwnerBtn[]" onclick="func_addOwner()">+</button>&nbsp;
 					貨主電話：<input type="text" id="Type0_OwnerPhone1" name="OwnerPhone[]" size="8px" disabled>&nbsp;
 					行動電話：<input type="text" id="Type0_OwnerCellphone1" name="OwnerCellphone[]" size="8px" disabled>&nbsp;
@@ -294,11 +301,12 @@
 	<div id="div_Type1" style="display:none">
 		<p>
 			起運(貨主)：<input type="text" list="owners" id="Type1_PkgOwner1" onchange="func_ownerchanged(this, '1','1')">&nbsp;
-			客戶電話：<input type="text" id="Type1_ownerPhone1" value="02xxx" disabled>&nbsp;
-			行動電話：<input type="text" id="Type1_ownerCellphone1" value="09xxx" disabled>&nbsp;
-			地點：<input type="text" id="Type1_ownerPlace1" value="台北市" disabled>
+			客戶電話：<input type="text" id="Type1_OwnerPhone1" value="02xxx" disabled>&nbsp;
+			行動電話：<input type="text" id="Type1_OwnerCellphone1" value="09xxx" disabled>&nbsp;
+			地點：<input type="text" id="Type1_OwnerPlace1" value="台北市" disabled>&nbsp;
+			備註：<input type="text" id="Type1_OwnerNotes1">
 		</p>
-		<p>到達(貨櫃場)<input type="text" id="Type1_Terminal"></p>
+		<p>到達(貨櫃場)<input type="text" list="warehouse" id="Type1_Terminal"></p>
 		<p>件數：<input type="text" id="Type1_PkgCount"></p>
 		<p>
 			單位：
@@ -313,7 +321,6 @@
 		</p>
 		<p>重量(kg)：<input type="text" id="Type1_Weight"></p>	
 		<p>材積：<input type="text" id="Type1_Volume"></p>
-		<p>備註：<input type="text" id="Type1_Notes"></p>
 		<p>船名/航次：<input type="text" id="Type1_ShipName"></p>
 		<p>S/O：<input type="text" id="Type1_SO"></p>
 		<p>統一編號：<input type="text" id="Type1_CompanyID"></p>
