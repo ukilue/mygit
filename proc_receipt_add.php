@@ -3,15 +3,15 @@
 	require_once 'db_config.php'; 
 	
 	$func = $_POST["func"];
-	//$conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password, array(PDO::MYSQL_ATTR_INIT_COMMAND => "set names utf8"));
-	$conn = new PDO("sqlsrv:Server=$host;Database=$dbname",$username, $password);
+	$conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password, array(PDO::MYSQL_ATTR_INIT_COMMAND => "set names utf8"));
+	//$conn = new PDO("sqlsrv:Server=$host;Database=$dbname",$username, $password);
 	$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	if ($func == 'add')
 	{
 	//新增資料
 		try
 		{
-			$stmt = $conn->query(" SELECT max(ID)+1 as ID FROM momo_DeliveryData ");	//(SELECT IFNULL(Max(GUID), 0)+1 FROM DeliveryData);
+			$stmt = $conn->query(" SELECT IFNULL(Max(ID), 0)+1 as ID FROM DeliveryData ");	//(SELECT IFNULL(Max(GUID), 0)+1 FROM DeliveryData);
 			$Delivery = $stmt->fetch();
 			$stmt->closeCursor();
 			
@@ -21,9 +21,9 @@
 			{
 				
 				$stmt = $conn->prepare(
-						" declare @GUID int ".
-						" SET @GUID = (SELECT max(GUID)+1 FROM momo_DeliveryData) ".
-						" INSERT INTO momo_DeliveryData (GUID,ID,Date,TradeType,CustomerID,PkgOwner,Terminal,PkgCount, ".
+						//" declare @GUID int ".
+						" SET @GUID = (SELECT IFNULL(Max(GUID), 0)+1 FROM DeliveryData); ".
+						" INSERT INTO DeliveryData (GUID,ID,Date,TradeType,CustomerID,PkgOwner,Terminal,PkgCount, ".
 						" Unit,Weight,Volume,Note,ShipName,SO,CloseDate) " .
 						" VALUES (@GUID,:ID,:Date,:TradeType,:CustomerID,:PkgOwner, :Terminal,:PkgCount, ".
 						" :Unit,:Weight,:Volume,:Note,:ShipName,:SO,:CloseDate); "
@@ -60,7 +60,7 @@
 		try
 		{
 			$stmt = $conn->prepare(
-					" SELECT Phone, CellPhone, Address, Notes FROM momo_PkgOwner WHERE Name=:Name"
+					" SELECT Phone, CellPhone, Address, Notes FROM PkgOwner WHERE Name=:Name"
 					);
 			$stmt->bindParam(':Name', $_POST['Name']);
 			$result = $stmt->execute();
@@ -92,7 +92,7 @@
 		try
 		{
 			$stmt = $conn->prepare(
-					" SELECT Name FROM momo_CustomerData WHERE ID=:ID"
+					" SELECT Name FROM CustomerData WHERE ID=:ID"
 					);
 			$stmt->bindParam(':ID', $_POST['ID']);
 			$result = $stmt->execute();
@@ -122,7 +122,7 @@
 		try
 		{
 			$stmt = $conn->prepare(
-					" SELECT Name FROM momo_PkgOwner WHERE CustomerID=:ID"
+					" SELECT Name FROM PkgOwner WHERE CustomerID=:ID"
 					);
 			$stmt->bindParam(':ID', $_POST['ID']);
 			$result = $stmt->execute();
