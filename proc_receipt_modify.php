@@ -4,8 +4,8 @@
 	
 	//$func = $_POST["func"];
 	$func = $_REQUEST["func"];
-	//$conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password, array(PDO::MYSQL_ATTR_INIT_COMMAND => "set names utf8"));
-	$conn = new PDO("sqlsrv:Server=$host;Database=$dbname",$username, $password);
+	$conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password, array(PDO::MYSQL_ATTR_INIT_COMMAND => "set names utf8"));
+	//$conn = new PDO("sqlsrv:Server=$host;Database=$dbname",$username, $password);
 	$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	if ($func == 'modify')
 	{
@@ -16,11 +16,11 @@
 			{
 				//jqgrid 編輯時
 				$stmt = $conn->prepare(
-						" UPDATE momo_DeliveryData SET Date=:Date,TradeType=:TradeType,CustomerID=:CustomerID,PkgOwner=:PkgOwner, " .
+						" UPDATE DeliveryData SET Date=:Date,TradeType=:TradeType,CustomerID=:CustomerID,PkgOwner=:PkgOwner, " .
 						" Terminal=:Terminal,PkgCount=:PkgCount,Unit=:Unit,Weight=:Weight,Volume=:Volume,Note=:Note,ShipName=:ShipName,SO=:SO, ".
 						" CloseDate=:CloseDate ".
-						" WHERE GUID=:GUID ".
-						" DELETE FROM momo_TransportData WHERE DeliveryGUID=:GUID1 "
+						" WHERE GUID=:GUID ;".
+						" DELETE FROM TransportData WHERE DeliveryGUID=:GUID1 "
 						
 						/*" UPDATE DeliveryData SET Date=:Date, TradeType=:TradeType,CustomerID=:CustomerID,PkgOwner1=:PkgOwner1,PkgOwner2=:PkgOwner2,Terminal=:Terminal, " .
 						" PkgCount=:PkgCount,Unit=:Unit,Weight=:Weight,Volume='0',Note='0',ShipName='0',SO='0',CloseDate='0' WHERE GUID='2' "*/
@@ -56,8 +56,8 @@
 			try
 			{
 				$stmt = $conn->prepare(
-						" DELETE FROM momo_DeliveryData WHERE GUID=:GUID ; ".
-						" DELETE FROM momo_TransportData WHERE DeliveryGUID=:GUID ;"
+						" DELETE FROM DeliveryData WHERE GUID=:GUID ; ".
+						" DELETE FROM TransportData WHERE DeliveryGUID=:GUID ;"
 						);
 				$stmt->bindParam(':GUID', $_POST['id']);
 				
@@ -76,7 +76,7 @@
 		{
 			$stmt = $conn->prepare(
 					" SELECT GUID,Date,(CASE WHEN TradeType = 0 THEN '進口' ELSE '出口' END) as TradeType,CustomerID,PkgOwner, ".
-					" Terminal,PkgCount,Unit,Weight,Volume,Note,ShipName,SO,CloseDate FROM momo_DeliveryData ".
+					" Terminal,PkgCount,Unit,Weight,Volume,Note,ShipName,SO,CloseDate FROM DeliveryData ".
 					" WHERE Date= :date ORDER BY GUID "
 					);
 			$date = $_POST['date'];
