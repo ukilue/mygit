@@ -1,4 +1,3 @@
-
 <script type="text/javascript">
 $.ajax({
 	type : "POST", cache : false, dataType : "json",
@@ -80,7 +79,7 @@ function AddOwner(data)
 	var outerdiv = $("#div_Type_Owner");
 	outerdiv.append(
 		"<p>" +
-		"	<input type=\"text\" id=\"Type_DeliveryGUID"+OwnerCount+"\" name=\"DeliveryGUID[]\" value=\""+GUID+"\" >&nbsp; " +
+		"	<input type=\"hidden\" id=\"Type_DeliveryGUID"+OwnerCount+"\" name=\"DeliveryGUID[]\" value=\""+GUID+"\" disabled>&nbsp; " +
 		"	<label name=\"OwnerLabel[]\">"+$str+"</label> "+
 		"	<input type=\"text\" id=\"Type_PkgOwner"+OwnerCount+"\" name=\"Owner[]\" size=\"10px\" value=\""+PkgOwner+"\" >&nbsp; " +
 		"	<label>送貨地點：</label> "+
@@ -103,7 +102,7 @@ function AddDriver(pkgnum)
 		"		<button type=\"button\" name=\"BtnDelDriver"+pkgnum+"[]\" onclick=\"DelDriver('"+pkgnum+"','"+DriverNum+"')\" >刪除</button> " +
 		"		<label name=\"DriverLabel"+pkgnum+"[]\">司機"+DriverNum+"：</label> "+
 		"		<input type=\"text\" id=\"Type_Driver"+pkgnum+"_"+DriverNum+"\" name=\"Driver"+pkgnum+"[]\" onchange=\"DriverChanged('"+pkgnum+"','"+DriverNum+"');\" size=\"5px\">&nbsp; "+
-		"		<input type=\"text\" id=\"Type_DriverName"+pkgnum+"_"+DriverNum+"\" name=\"DriverName"+pkgnum+"[]\"  size=\"10px\" > "+
+		"		<input type=\"text\" id=\"Type_DriverName"+pkgnum+"_"+DriverNum+"\" name=\"DriverName"+pkgnum+"[]\"  size=\"10px\" disabled > "+
 		"		<label name=\"CarLabel"+pkgnum+"[]\">車種"+DriverNum+"：</label> "+
 		//"		<input type=\"text\" id=\"Type_CarType"+pkgnum+"_"+DriverNum+"\" name=\"CarType"+pkgnum+"[]\" onchange=\"CarTypeChanged('0','"+pkgnum+"','"+DriverNum+"');\" size=\"5px\">&nbsp; "+
 		"		<select id=\"Type_CarType"+pkgnum+"_"+DriverNum+"\" name=\"CarType"+pkgnum+"[]\" onchange=\"CarTypeChanged('"+pkgnum+"','"+DriverNum+"');\"> "+
@@ -121,6 +120,8 @@ function AddDriver(pkgnum)
 		"		<label name=\"esPriceLabel"+pkgnum+"[]\">運費表報價"+DriverNum+"：</label> "+
 		"		<input type=\"text\" id=\"Type_esPrice"+pkgnum+"_"+DriverNum+"\" name=\"esPrice"+pkgnum+"[]\" size=\"10px\" > "+
 		"	</p>"+
+		"	<label name=\"lastPriceLabel"+pkgnum+"[]\">※貨主近五筆同車種資料"+DriverNum+"(選擇車種後顯示)：</label> "+
+		"	<div id=\"Owner"+pkgnum+"_lastTransport"+DriverNum+"\" name=\"DivlastTransport"+pkgnum+"[]\"></div> "+
 		"</div>"
 	);
 }
@@ -133,6 +134,7 @@ function DelDriver(pkgnum,DriverNum)
 	var Drivers = document.getElementsByName("Driver"+pkgnum+"[]");
 	//div
 	var Div_Driver = document.getElementsByName("DivDriver"+pkgnum+"[]");
+	var Div_Transport = document.getElementsByName("DivlastTransport"+pkgnum+"[]");
 	//button
 	var Button_DelDriver = document.getElementsByName("BtnDelDriver"+pkgnum+"[]");
 	//label
@@ -140,6 +142,7 @@ function DelDriver(pkgnum,DriverNum)
 	var Label_Car = document.getElementsByName("CarLabel"+pkgnum+"[]");
 	var Label_Price = document.getElementsByName("PriceLabel"+pkgnum+"[]");
 	var Label_esPrice = document.getElementsByName("esPriceLabel"+pkgnum+"[]");
+	var Label_lastPrice = document.getElementsByName("lastPriceLabel"+pkgnum+"[]");
 	//input
 	var input_Driver = document.getElementsByName("Driver"+pkgnum+"[]");
 	var input_DriverName = document.getElementsByName("DriverName"+pkgnum+"[]");
@@ -151,20 +154,21 @@ function DelDriver(pkgnum,DriverNum)
 	{
 		
 		Div_Driver[i].setAttribute("id", "Owner"+pkgnum+"_Driver"+(i+1));
+		Div_Transport[i].setAttribute("id", "Owner"+pkgnum+"_lastTransport"+(i+1));
 		
 		Button_DelDriver[i].setAttribute("onclick", "DelDriver('"+pkgnum+"','"+(i+1)+"')");
 		
 		Label_Driver[i].innerHTML = "司機"+(i+1)+"：";
-		Label_DriverName[i].setAttribute("id", "Type_DriverName"+pkgnum+"_"+DriverNum);
 		Label_Car[i].innerHTML = "車種"+(i+1)+"：";
 		Label_Price[i].innerHTML = "金額"+(i+1)+"：";
 		Label_esPrice[i].innerHTML = "運費表報價"+(i+1)+"：";
+		Label_lastPrice[i].innerHTML = "※貨主近五筆同車種資料"+(i+1)+"(選擇車種後顯示)：";
 		
-		input_Driver[i].setAttribute("id", "Type_Driver"+pkgnum+"_"+DriverNum);
-		input_DriverName[i].setAttribute("id", "Type_DriverName"+pkgnum+"_"+DriverNum);
-		input_CarType[i].setAttribute("id", "Type_CarType"+pkgnum+"_"+DriverNum);
-		input_Price[i].setAttribute("id", "Type_Price"+pkgnum+"_"+DriverNum);
-		input_esPrice[i].setAttribute("id", "Type_esPrice"+pkgnum+"_"+DriverNum);
+		input_Driver[i].setAttribute("id", "Type_Driver"+pkgnum+"_"+(i+1));
+		input_DriverName[i].setAttribute("id", "Type_DriverName"+pkgnum+"_"+(i+1));
+		input_CarType[i].setAttribute("id", "Type_CarType"+pkgnum+"_"+(i+1));
+		input_Price[i].setAttribute("id", "Type_Price"+pkgnum+"_"+(i+1));
+		input_esPrice[i].setAttribute("id", "Type_esPrice"+pkgnum+"_"+(i+1));
 	}
 }
 function CustomerIDChanged()
@@ -203,20 +207,76 @@ function DriverChanged(pkgnum, DriverNum)
 }
 function CarTypeChanged(pkgnum, DriverNum)
 {
+	var input_PkgOwner = $("#Type_PkgOwner"+pkgnum);
 	var input_Country = $("#Type_Country"+pkgnum);
 	var input_CarType = $("#Type_CarType"+pkgnum+"_"+DriverNum);
 	var input_esPrice = $("#Type_esPrice"+pkgnum+"_"+DriverNum);
+	var div_lastTransport = $("#Owner"+pkgnum+"_lastTransport"+DriverNum);
 	//alert(input_Country.val()+" " +input_CarType.val());
 	$.ajax({
-		type : "POST", cache : false, dataType : "json",
+		type : "POST", cache : false, dataType : "text",
 		url: "/proc_shipping_add.php",
 		data: {	func:'queryFee',Country:input_Country.val(),CarType:input_CarType.val()},
 		success: function (fee) {
-			if (fee=="") input_esPrice.val("查無資料");
-			 else input_esPrice.val(fee[0][0]);
+			if (fee=="" || fee=="0") input_esPrice.val("查無資料");
+			 else input_esPrice.val(fee);
 		},
 		error: function (e) {
 			input_esPrice.val("查無資料");
+		}		
+	});
+	
+	$.ajax({
+		type : "POST", cache : false, dataType : "json",
+		url: "/proc_shipping_add.php",
+		data: {	func:'querylastData',PkgOwner:input_PkgOwner.val(),CarType:input_CarType.val()},
+		success: function (data) {
+			if (data.length < 1)
+			{
+				div_lastTransport.html("查無資料");
+			}
+			else
+			{
+				var innerhtml = 
+					"<table>" + 
+					"	<tr>" +
+					"		<td>日期</td>" +
+					"		<td>載運人</td>" +
+					"		<td>車種</td>" +
+					"		<td>起運</td>" +
+					"		<td>送達</td>" +
+					"		<td>件數</td>" +
+					"		<td>重量</td>" +
+					"		<td>材積</td>" +
+					"		<td>金額</td>" +
+					"		<td>備註</td>" + 
+					"	</tr>";
+				
+				var i;
+				for (i = 0; i < data.length; i++)
+				{
+					innerhtml = innerhtml +
+					"	<tr>" +
+					"		<td>"+data[i]['Date']+"</td>" +
+					"		<td>"+data[i]['Name']+"</td>" +
+					"		<td>"+data[i]['CarType']+"</td>" +
+					"		<td>"+data[i]['StartPlace']+"</td>" +
+					"		<td>"+data[i]['SendPlace']+"</td>" +
+					"		<td>"+data[i]['PkgCount']+"</td>" +
+					"		<td>"+data[i]['Weight']+"</td>" +
+					"		<td>"+data[i]['Volume']+"</td>" +
+					"		<td>"+data[i]['Price']+"</td>" +
+					"		<td>"+data[i]['notes']+"</td>" + 
+					"	</tr>";
+				}
+				innerhtml = innerhtml+
+					"	<tr>" +
+					"</table>";
+				div_lastTransport.html(innerhtml);
+			}
+		},
+		error: function (e) {
+			//input_esPrice.val("查無資料");
 		}		
 	});
 }
@@ -253,16 +313,19 @@ function submit_save()
 		var Drivers = document.getElementsByName("Driver"+(i+1)+"[]");
 		var CarType = document.getElementsByName("CarType"+(i+1)+"[]");
 		var Price = document.getElementsByName("Price"+(i+1)+"[]");
+		var esPrice = document.getElementsByName("esPrice"+(i+1)+"[]");
 		
 		var ary_Drivers = new Array();
 		var ary_CarType = new Array();
 		var ary_Price = new Array();
+		var ary_esPrice = new Array();
 		
 		for (j = 0; j < Drivers.length; j++)
 		{
 			ary_Drivers.push(Drivers[j].value);
 			ary_CarType.push(CarType[j].value);
 			ary_Price.push(Price[j].value);
+			ary_esPrice.push(esPrice[j].value);
 		}
 		
 	
@@ -271,8 +334,9 @@ function submit_save()
 			url: "/proc_shipping_add.php",
 			data: {	func:'add',TradeType:TradeType,DeliveryDate:DeliveryDate,CustomerID:CustomerID,DeliveryGUID:DeliveryGUID[i].value,PkgCount:PkgCount,Unit:Unit,Weight:Weight,
 					Volume:Volume,Terminal:Terminal,PkgOwner:Owners[i].value,Country:OwnerPlace[i].value,Notes:OwnerNotes[i].value,
-					Driver:ary_Drivers,CarType:ary_CarType,Price:ary_Price},
+					Driver:ary_Drivers,CarType:ary_CarType,Price:ary_Price,esPrice:ary_esPrice},
 			success: function (data) {
+				//Console.log(data);
 			},
 			error: function () {
 				alert("系統異常, 請稍候再試");
