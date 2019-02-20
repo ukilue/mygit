@@ -138,7 +138,6 @@ function submit_add() {
 		$("#Phone").focus();
 		return;
 	}
-	alert(CustomerID);
 	
 	$.ajax({
 		type : "POST", cache : false, dataType : "text",
@@ -161,32 +160,51 @@ function submit_add() {
 	});		
 	
 }
+function queryCustomer()
+{
+	var ID = $("#CustomerID").val();
+	
+	$.ajax({
+		type : "POST", cache : false, dataType : "text",
+		url: "/proc_global.php",
+		data: {	func:'QueryCustomer',ID:ID},
+		success: function (data) {
+			$("#CustomerName" ).val(data);
+		},
+		error: function () {
+			alert("系統異常, 請稍候再試");
+		}		
+	});	
+	
+	document.getElementById("owners").innerHTML="";
+	$.ajax({
+		type : "POST", cache : false, dataType : "text",
+		url: "/proc_global.php",
+		data: {	func:'QueryOwnerByCustomerID',ID:ID},
+		success: function (data) {
+			document.getElementById("owners").innerHTML=data;
+		},
+		error: function () {
+			alert("系統異常, 請稍候再試");
+		}		
+	});	
+}
 </script>
 
-<!--客戶資料-->
-<datalist id="customers">
-<?php
-	$sql= " SELECT ID, Name FROM momo_CustomerData ORDER BY Name";
-	$result = $conn->query($sql);
-	if (!empty($result))
-	{
-		foreach ($result as $row)
-		{
-			print "<option>".$row['ID']."_".$row['Name']."</option>";
-			
-		}
-	}
-?>
-</datalist>
 <fieldset>
 	<legend>新增資料</legend>
  <!--<form method="post">action="page_maintain_001.php"-->
-	<table style="text-align:right;">
+	<table style="text-align:left;">
 		<tr>
 			<td><p>貨主名稱</p></td>
 			<td><p><input type="text" id="Name"></p></td>
-			<td><p>報關行</p></td>
-			<td><p><input type="text" list="customers" id="CustomerID"></p></td>
+			<td><p>客戶ID</p></td>
+			<td>
+				<p>
+					<input type="text" id="CustomerID" onchange="queryCustomer()">&nbsp;
+					<input type="text" id="CustomerName" disabled>
+				</p>
+			</td>
 		</tr>
 		<tr>
 			<td><p>室內電話</p></td>
@@ -234,7 +252,7 @@ function submit_add() {
 			<div class="row" style="margin-bottom:20px;">
 				<div class="col-xs-6 col-sm-6 col-md-2 col-lg-2">
 					<div class="input-group input-group-sm" style="min-width:200px;">
-						<input type="text" id="keyword" class="form-control" placeholder="輸入關鍵字" style="font-size:16px;height:40px;">
+						<input type="text" id="keyword" class="form-control" placeholder="請輸入貨主名稱" style="font-size:16px;height:40px;">
 						<span class="input-group-addon">
 							<i class="ace-icon fa fa-pencil-square-o"></i>
 						</span>
