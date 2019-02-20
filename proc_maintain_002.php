@@ -43,17 +43,18 @@
 			{
 				//jqgrid 編輯時
 				$stmt = $conn->prepare(
-						" UPDATE momo_DriverData SET Name=:Name, ID=:ID, Phone1=:Phone1, Phone2=:Phone2, Address=:Address WHERE GUID=:GUID "
+						" UPDATE momo_DriverData SET GUID=:GUID, Name=:Name, ID=:ID, Phone1=:Phone1, Phone2=:Phone2, Address=:Address WHERE GUID=:OldGUID "
 						
 						/*" UPDATE DeliveryData SET Date=:Date, TradeType=:TradeType,CustomerID=:CustomerID,PkgOwner1=:PkgOwner1,PkgOwner2=:PkgOwner2,Terminal=:Terminal, " .
 						" PkgCount=:PkgCount,Unit=:Unit,Weight=:Weight,Volume='0',Note='0',ShipName='0',SO='0',CloseDate='0' WHERE GUID='2' "*/
 						);
+				$stmt->bindParam(':GUID', $_POST['GUID']);
 				$stmt->bindParam(':Name', $_POST['Name']);
 				$stmt->bindParam(':ID', $_POST['ID']);
 				$stmt->bindParam(':Phone1', $_POST['Phone1']);
 				$stmt->bindParam(':Phone2', $_POST['Phone2']);
 				$stmt->bindParam(':Address', $_POST['Address']);
-				$stmt->bindParam(':GUID', $_POST['GUID']);
+				$stmt->bindParam(':OldGUID', $_POST['OldGUID']);
 				
 				$result = $stmt->execute();
 				//$stmt->closeCursor();
@@ -88,7 +89,7 @@
 		try
 		{
 			$stmt = $conn->prepare(
-					" SELECT GUID, Name, ID, Phone1, Phone2, Address FROM momo_DriverData " .
+					" SELECT GUID as OldGUID, GUID, Name, ID, Phone1, Phone2, Address FROM momo_DriverData " .
 					" WHERE Name like '%'+ :Name +'%' "
 					);
 			$stmt->bindParam(':Name', $_POST['keyword']);
