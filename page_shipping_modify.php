@@ -17,6 +17,13 @@ jQuery(function($) {
 		dateFormat: 'yy/mm/dd',
 	});	
 	$( "#datepicker" ).zIndex(1000);
+	var today = new Date();
+	var day = today.getDate();
+	if (day <10) day = "0"+day;
+	var month = today.getMonth()+1;
+	if (month <10) month = "0"+month;
+	var year = today.getFullYear();
+	$( "#datepicker" ).val(year+"/"+month+"/"+day);
 });
 function ChangeData()
 {
@@ -77,9 +84,9 @@ function loadGrid (g_data) {
 					//editformbutton:true 
 				}
 			},
-			{name:'GUID',index:'GUID', width:15, editable: false, key:true},
+			{name:'GUID',index:'GUID', width:15, editable: false, key:true, hidden:true},
 			{name:'Date',index:'Date',width:25, editable:false},
-			{name:'DeliveryGUID',index:'DeliveryGUID', width:20, editable: false},
+			{name:'DeliveryGUID',index:'DeliveryGUID', width:20, editable: false, hidden:true},
 			{name:'CustGUID',index:'CustGUID', width:20, editable: true, editoptions:{size:"5",maxlength:"10"}},
 			{name:'PkgOwner',index:'PkgOwner', width:20, editable: true, editoptions:{size:"5",maxlength:"20"}},
 			{name:'DriverGUID',index:'DriverGUID', width:20, editable: true, editoptions:{size:"7",maxlength:"10"}},
