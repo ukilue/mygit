@@ -48,7 +48,7 @@ function loadGrid (g_data) {
 		data: g_data,
 		datatype: "local",
 		height: 200,
-		colNames:['維護', '代號','名稱','身份證', '電話1', '電話2','聯絡地址'],
+		colNames:['維護','原代號', '代號','名稱','身份證', '電話1', '電話2','聯絡地址'],
 		colModel:[
 			{name:'mfunc',index:'', width:20, resize:true,
 				formatter:'actions', 
@@ -61,7 +61,8 @@ function loadGrid (g_data) {
 					//editformbutton:true 
 				}
 			},
-			{name:'GUID',index:'GUID', width:20, editable: false, key:true},
+			{name:'OldGUID',index:'OldGUID', width:20, editable: true, key:true, hidden:true},
+			{name:'GUID',index:'GUID', width:20, editable: true, key:true},
 			{name:'Name',index:'Name',width:20, editable:true, editoptions:{size:"10",maxlength:"10"}},
 			{name:'ID',index:'ID', width:20, editable: true, editoptions:{size:"10",maxlength:"10"}},
 			{name:'Phone1',index:'Phone1', width:20, editable: true, editoptions:{size:"10",maxlength:"15"}},
@@ -193,7 +194,7 @@ function submit_add() {
 			<div class="row" style="margin-bottom:20px;">
 				<div class="col-xs-6 col-sm-6 col-md-2 col-lg-2">
 					<div class="input-group input-group-sm" style="min-width:200px;">
-						<input type="text" id="keyword" class="form-control" placeholder="輸入關鍵字" style="font-size:16px;height:40px;">
+						<input type="text" id="keyword" class="form-control" placeholder="請輸入司機名稱" style="font-size:16px;height:40px;">
 						<span class="input-group-addon">
 							<i class="ace-icon fa fa-pencil-square-o"></i>
 						</span>
