@@ -22,9 +22,9 @@
 			$stmt->bindParam(':Country', $_POST['Country']);
 			$stmt->bindParam(':Address', $_POST['Address']);
 			$stmt->bindParam(':CompanyID', $_POST['CompanyID']);
-			$Customer = $_POST['CustomerID'];
-			$CustomerID = substr($Customer, 0, strpos($Customer,"_"));
-			$stmt->bindParam(':CustomerID', $CustomerID);
+			//$Customer = $_POST['CustomerID'];
+			//$CustomerID = substr($Customer, 0, strpos($Customer,"_"));
+			$stmt->bindParam(':CustomerID', $_POST['CustomerID']);
 			$stmt->bindParam(':Notes', $_POST['Notes']);
 			
 			$result = $stmt->execute();
