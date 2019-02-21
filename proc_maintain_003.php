@@ -95,8 +95,9 @@
 		{
 			$stmt = $conn->prepare(
 					" SELECT ID, Name, Principal, Email, Phone, CellPhone, Fax, Address, Notes FROM momo_CustomerData " .
-					" WHERE Name like '%'+ :Name +'%' "
+					" WHERE (ID like '%'+ :ID +'%') OR (Name like '%'+ :Name +'%') "
 					);
+			$stmt->bindParam(':ID', $_POST['keyword']);
 			$stmt->bindParam(':Name', $_POST['keyword']);
 			
 			$result = $stmt->execute();
