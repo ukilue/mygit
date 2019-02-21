@@ -149,53 +149,83 @@ function submit_add() {
 	
 }
 </script>
-<fieldset>
-	<legend>新增資料</legend>
- <!--<form method="post">action="page_maintain_001.php"-->
-	<p>代　　號 <input type="text" placeholder="代號" id="ID"></p>
-	<p>名　　稱 <input type="text" placeholder="名稱" id="Name"></p>
-	<p>負 責 人 <input type="text" placeholder="負責人" id="Principal"></p>
-	<p>Email　　<input type="text" placeholder="Email" id="Email"></p>
-	<p>室內電話 <input type="text" placeholder="室內電話" id="Phone"></p>
-	<p>手機電話 <input type="text" placeholder="手機電話" id="CellPhone"></p>
-	<p>傳真號碼 <input type="text" placeholder="傳真號碼" id="Fax"></p>
-	<p>聯絡地址 <input type="text" placeholder="聯絡地址" id="Address"></p>
-	<p>備　　註 <input type="text" placeholder="備註" id="Notes"></p>
-	<button class="btn btn-app btn-grey btn-xs radius-4" onclick="submit_add();">
-		<i class="ace-icon fa fa-floppy-o bigger-160"></i>
-		Save
-		<span class="badge badge-transparent">
-			<i class="light-red ace-icon fa fa-asterisk"></i>
-		</span>
-	</button>
-	<!--<button type="button" class="width-10 pull-left btn btn-sm btn-primary" onclick="submit_add();">
-		<i class="ace-icon fa fa-key"></i>
-		<span class="bigger-110">新增資料</span>
-	</button>
-	-->
- <!--</form>-->
-</fieldset>
-<p></p>
-<fieldset>
-	<legend>維護資料</legend>
-	<div class="row">
-		<div class="col-xs-12">
-			<div class="row" style="margin-bottom:20px;">
-				<div class="col-xs-6 col-sm-6 col-md-2 col-lg-2">
-					<div class="input-group input-group-sm" style="min-width:200px;">
-						<input type="text" id="keyword" class="form-control" placeholder="輸入關鍵字" style="font-size:16px;height:40px;">
-						<span class="input-group-addon">
-							<i class="ace-icon fa fa-pencil-square-o"></i>
-						</span>
-						<button type="button" class="width-100 pull-right btn btn-sm btn-primary" style="margin-left:10px;height:40px;" onclick="SelectData();">
-							<span class="bigger-110">查詢</span>
-						</button>
-					</div>
-				</div>
-			</div>
-			
-			<table id="grid-table"></table>
-			<div id="grid-pager"></div>
+<h3 class="header smaller lighter green">新增資料</h3>
+<form class="form-horizontal" role="form">
+	<div class="form-group">
+		<label class="col-sm-1 control-label no-padding-right" style="width:70px">代號</label>
+		<div class="col-sm-1">
+			<input type="text" id="ID" class="form-control" placeholder="代號" class="form-control">
 		</div>
 	</div>
-</fieldset>
+	<div class="form-group">
+		<label class="col-sm-1 control-label no-padding-right" style="width:70px">名稱</label>
+		<div class="col-sm-1">
+			<input type="text" id="Name" class="form-control" placeholder="名稱" class="form-control">
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-1 control-label no-padding-right" style="width:70px">負責人</label>
+		<div class="col-sm-1">
+			<input type="text" id="Principal" class="form-control" placeholder="負責人" class="form-control">
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-1 control-label no-padding-right" style="width:70px">Email</label>
+		<div class="col-sm-1">
+			<input type="text" id="Email" class="form-control" placeholder="Email" class="form-control">
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-1 control-label no-padding-right" style="width:70px">室內電話</label>
+		<div class="col-sm-1">
+			<input type="text" id="Phone" class="form-control" placeholder="室內電話" class="form-control">
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-1 control-label no-padding-right" style="width:70px">手機電話</label>
+		<div class="col-sm-1">
+			<input type="text" id="CellPhone" class="form-control" placeholder="手機電話" class="form-control">
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-1 control-label no-padding-right" style="width:70px">傳真號碼</label>
+		<div class="col-sm-1">
+			<input type="text" id="Fax" class="form-control" placeholder="傳真號碼" class="form-control">
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-1 control-label no-padding-right" style="width:70px">聯絡地址</label>
+		<div class="col-sm-3">
+			<input type="text" id="Address" class="form-control" placeholder="聯絡地址" class="form-control">
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-1 control-label no-padding-right" style="width:70px">備註</label>
+		<div class="col-sm-3">
+			<input type="text" id="Notes" class="form-control" placeholder="備註" class="form-control">
+		</div>
+	</div>
+</form>
+<button class="btn btn-lg btn-success" onclick="submit_add();">新增</button>
+<p></p>
+<h3 class="header smaller lighter blue">維護資料</h3>
+<div class="row">
+	<div class="col-xs-12">
+		<div class="row" style="margin-bottom:20px;">
+			<div class="col-xs-6 col-sm-6 col-md-2 col-lg-2">
+				<div class="input-group input-group-sm" style="min-width:300px;">
+					<input type="text" id="keyword" class="form-control" placeholder="請輸入代號或名稱" style="font-size:16px;height:40px;">
+					<span class="input-group-addon">
+						<i class="ace-icon fa fa-pencil-square-o"></i>
+					</span>
+					<button type="button" class="width-100 pull-right btn btn-sm btn-primary" style="margin-left:10px;height:40px;" onclick="SelectData();">
+						<span class="bigger-110">查詢</span>
+					</button>
+				</div>
+			</div>
+		</div>
+		
+		<table id="grid-table"></table>
+		<div id="grid-pager"></div>
+	</div>
+</div>
