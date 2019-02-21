@@ -1,9 +1,3 @@
-<?php
-	require_once 'db_config.php'; 
-	//$conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password, array(PDO::MYSQL_ATTR_INIT_COMMAND => "set names utf8"));
-	$conn = new PDO("sqlsrv:Server=$host;Database=$dbname",$username, $password);
-	$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-?>	
 <script src="/assets/js/jquery.jqGrid.min.js"></script>
 <script src="/assets/js/grid.locale-en.js"></script>
 <script src="/resource/js/jqgrid.cus.js"></script>
@@ -190,81 +184,80 @@ function queryCustomer()
 	});	
 }
 </script>
-
-<fieldset>
-	<legend>新增資料</legend>
- <!--<form method="post">action="page_maintain_001.php"-->
-	<table style="text-align:left;">
-		<tr>
-			<td><p>貨主名稱</p></td>
-			<td><p><input type="text" id="Name"></p></td>
-			<td><p>客戶ID</p></td>
-			<td>
-				<p>
-					<input type="text" id="CustomerID" onchange="queryCustomer()">&nbsp;
-					<input type="text" id="CustomerName" disabled>
-				</p>
-			</td>
-		</tr>
-		<tr>
-			<td><p>室內電話</p></td>
-			<td><p><input type="text" id="Phone"></p></td>
-			<td><p>手機號碼</p></td>
-			<td><p><input type="text" id="CellPhone"></p></td>
-		</tr>
-		<tr>
-			<td><p>縣市</p></td>
-			<td><p><input type="text" id="Country"></p></td>
-			<td><p>聯絡地址</p></td>
-			<td><p><input type="text" id="Address"></p></td>
-		</tr>
-		<tr>
-			<td><p>統一編號</p></td>
-			<td><p><input type="text" id="CompanyID"></p></td>
-			<td colspan="2" rowspan="2" style="text-align:center;">
-				<button class="btn btn-app btn-grey btn-xs radius-4" onclick="submit_add();">
-					<i class="ace-icon fa fa-floppy-o bigger-160"></i>
-					Save
-					<span class="badge badge-transparent">
-						<i class="light-red ace-icon fa fa-asterisk"></i>
-					</span>
-				</button>
-			</td>
-		</tr>
-		<tr>
-			<td><p>備註</p>
-			<td><p><input type="text" id="Notes"></p></td>
-		</tr>
-		</p>
-	</table>
-	<!--<button type="button" class="width-10 pull-left btn btn-sm btn-primary" onclick="submit_add();">
-		<i class="ace-icon fa fa-key"></i>
-		<span class="bigger-110">新增資料</span>
-	</button>
-	-->
- <!--</form>-->
-</fieldset>
-<p></p>
-<fieldset>
-	<legend>維護資料</legend>
-	<div class="row">
-		<div class="col-xs-12">
-			<div class="row" style="margin-bottom:20px;">
-				<div class="col-xs-6 col-sm-6 col-md-2 col-lg-2">
-					<div class="input-group input-group-sm" style="min-width:200px;">
-						<input type="text" id="keyword" class="form-control" placeholder="請輸入貨主名稱" style="font-size:16px;height:40px;">
-						<span class="input-group-addon">
-							<i class="ace-icon fa fa-pencil-square-o"></i>
-						</span>
-						<button type="button" class="width-100 pull-right btn btn-sm btn-primary" style="margin-left:10px;height:40px;" onclick="SelectData();">
-							<span class="bigger-110">查詢</span>
-						</button>
-					</div>
-				</div>
-			</div>
-			
-			<table id="grid-table"></table>
-			<div id="grid-pager"></div>
+<h3 class="header smaller lighter green">新增資料</h3>
+<form class="form-horizontal" role="form">
+	<div class="form-group">
+		<label class="col-sm-1 control-label no-padding-right" style="width:70px">貨主名稱</label>
+		<div class="col-sm-1">
+			<input type="text" id="Name" class="form-control" placeholder="貨主名稱" class="form-control">
 		</div>
 	</div>
-</fieldset>
+	<div class="form-group">
+		<label class="col-sm-1 control-label no-padding-right" style="width:70px">客戶ID</label>
+		<div class="col-sm-1">
+			<input type="text" id="CustomerID" class="form-control" placeholder="客戶ID" onchange="queryCustomer()">
+		</div>
+		<div class="col-sm-1">
+			<input type="text" id="CustomerName" class="form-control" disabled>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-1 control-label no-padding-right" style="width:70px">室內電話</label>
+		<div class="col-sm-1">
+			<input type="text" id="Phone" class="form-control" placeholder="室內電話" class="form-control">
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-1 control-label no-padding-right" style="width:70px">手機號碼</label>
+		<div class="col-sm-1">
+			<input type="text" id="CellPhone" class="form-control" placeholder="手機號碼" class="form-control">
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-1 control-label no-padding-right" style="width:70px">統一編號</label>
+		<div class="col-sm-1">
+			<input type="text" id="CompanyID" class="form-control" placeholder="統一編號" class="form-control">
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-1 control-label no-padding-right" style="width:70px">縣市</label>
+		<div class="col-sm-1">
+			<input type="text" id="Country" class="form-control" placeholder="縣市" class="form-control">
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-1 control-label no-padding-right" style="width:70px">聯絡地址</label>
+		<div class="col-sm-3">
+			<input type="text" id="Address" class="form-control" placeholder="聯絡地址" class="form-control">
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-1 control-label no-padding-right" style="width:70px">備註</label>
+		<div class="col-sm-3">
+			<input type="text" id="Notes" class="form-control" placeholder="備註" class="form-control">
+		</div>
+	</div>
+</form>
+<button class="btn btn-lg btn-success" onclick="submit_add();">新增</button>
+<p></p>
+<h3 class="header smaller lighter blue">維護資料</h3>
+<div class="row">
+	<div class="col-xs-12">
+		<div class="row" style="margin-bottom:20px;">
+			<div class="col-xs-6 col-sm-6 col-md-2 col-lg-2">
+				<div class="input-group input-group-sm" style="min-width:200px;">
+					<input type="text" id="keyword" class="form-control" placeholder="請輸入貨主名稱" style="font-size:16px;height:40px;">
+					<span class="input-group-addon">
+						<i class="ace-icon fa fa-pencil-square-o"></i>
+					</span>
+					<button type="button" class="width-100 pull-right btn btn-sm btn-primary" style="margin-left:10px;height:40px;" onclick="SelectData();">
+						<span class="bigger-110">查詢</span>
+					</button>
+				</div>
+			</div>
+		</div>
+		
+		<table id="grid-table"></table>
+		<div id="grid-pager"></div>
+	</div>
+</div>
