@@ -13,7 +13,7 @@ jQuery(function($) {
 		selectOtherMonths: false,
 		dateFormat: 'yy/mm/dd',
 	});	
-	//$( "#datepicker" ).zIndex(500);
+	$( "#datepicker" ).zIndex(500);
 	var today = new Date();
 	var day = today.getDate();
 	if (day <10) day = "0"+day;
@@ -27,14 +27,13 @@ jQuery(function($) {
 		selectOtherMonths: false,
 		dateFormat: 'yy/mm/dd',
 	});	
-	//$( "#StartDate" ).zIndex(600);
+	$( "#StartDate" ).zIndex(600);
 	$( "#EndDate" ).datepicker({
 		showOtherMonths: true,
 		selectOtherMonths: false,
 		dateFormat: 'yy/mm/dd',
 	});	
-	//$( "#EndDate" ).zIndex(700);
-	$( "#toprow" ).zIndex(1000);
+	$( "#EndDate" ).zIndex(700);
 });
 
 jQuery(getdata("","",""));
@@ -99,7 +98,7 @@ function loadGrid (g_data) {
 				}
 			},
 			{name:'GUID',index:'GUID', width:20, editable: true, key:true, hidden:true},
-			{name:'Date',index:'Date', width:20, editable: true, key:true},
+			{name:'Date',index:'Date', width:20, editable: true},
 			{name:'CustomerID',index:'CustomerID',width:20, editable:true, editoptions:{size:"10",maxlength:"10"}},
 			{name:'PkgOwner',index:'PkgOwner', width:20, editable: true, editoptions:{size:"10",maxlength:"10"}},
 			{name:'Terminal',index:'Terminal', width:20, editable: true, editoptions:{size:"10",maxlength:"15"}},
@@ -250,14 +249,14 @@ function queryCustomer()
  <!--<form method="post">action="page_maintain_001.php"-->
 <form class="form-horizontal" role="form">
 	<div class="form-group">
-		<label class="col-sm-1 control-label no-padding-right">日期</label>
+		<label class="col-sm-1 control-label no-padding-right" style="width:70px">日期</label>
 		<div class="col-sm-1">
 			
 			<input type="text" id="datepicker" class="form-control" placeholder="請點選日期" class="form-control">
 		</div>
 	</div>
 	<div class="form-group">
-		<label class="col-sm-1 control-label no-padding-right">客戶</label>
+		<label class="col-sm-1 control-label no-padding-right" style="width:70px">客戶</label>
 		<div class="col-sm-1">
 			<input type="text" placeholder="請輸入客戶ID" id="CustomerID" onchange="queryCustomer()" class="form-control"> 
 		</div>
@@ -266,19 +265,19 @@ function queryCustomer()
 		</div>
 	</div>
 	<div class="form-group">
-		<label class="col-sm-1 control-label no-padding-right">貨主</label>
+		<label class="col-sm-1 control-label no-padding-right" style="width:70px">貨主</label>
 		<div class="col-sm-1">
 			<input type="text" list="owners" placeholder="請輸入貨主" id="PkgOwner" class="form-control">
 		</div>
 	</div>
 	<div class="form-group">
-		<label class="col-sm-1 control-label no-padding-right">貨櫃場</label>
+		<label class="col-sm-1 control-label no-padding-right" style="width:70px">貨櫃場</label>
 		<div class="col-sm-1">
 			<input type="text" list="warehouse" placeholder="請輸入櫃場" id="Terminal" class="form-control">
 		</div>
 	</div>
 	<div class="form-group">
-		<label class="col-sm-1 control-label no-padding-right">金額</label>
+		<label class="col-sm-1 control-label no-padding-right" style="width:70px">金額</label>
 		<div class="col-sm-1">
 			<input type="text" placeholder="請輸入金額" id="Price" class="form-control">
 		</div>
@@ -288,27 +287,32 @@ function queryCustomer()
 <button class="btn btn-lg btn-success" onclick="submit_add();">新增</button>
 <p></p>
 <h3 class="header smaller lighter blue">維護資料</h3>
-<div class="container">
-	<div class="row" id="toprow">
-		<div class="col-sm-2">
-			<label>客戶</label><input type="text" id="CID"  placeholder="請輸入客戶ID">
+
+<div class="row">
+	<div class="col-xs-12">
+		<div class="row" style="margin-bottom:20px;">
+			<div class="col-xs-6 col-sm-6 col-md-2 col-lg-2">
+				<div class="input-group input-group-sm" style="min-width:600px;">
+					<input type="text" id="CID" class="form-control"  placeholder="請輸入客戶ID" style="font-size:16px;height:40px;">
+					<span class="input-group-addon">
+						<i class="ace-icon fa fa-pencil-square-o"></i>
+					</span>
+					<input type="text" id="StartDate" class="form-control" placeholder="請選擇起始日期" style="font-size:16px;height:40px;">
+					<span class="input-group-addon">
+						<i class="ace-icon fa fa-calendar"></i>
+					</span>
+					<input type="text" id="EndDate" class="form-control" placeholder="請選擇結束日期" style="font-size:16px;height:40px;">
+					<span class="input-group-addon">
+						<i class="ace-icon fa fa-calendar"></i>
+					</span>
+					<button type="button" class="width-100 pull-right btn btn-sm btn-primary" style="margin-left:10px;height:40px;" onclick="SelectData();">
+						<span class="bigger-110">查詢</span>
+					</button>
+				</div>
+			</div>
 		</div>
-		<div class="col-sm-3">
-			<label>起始日期</label><input type="text" id="StartDate" placeholder="請選擇起始日期">
-		</div>
-		<div class="col-sm-3">
-			<label>結束日期</label><input type="text" id="EndDate" placeholder="請選擇結束日期">
-		</div>
-		<div class="col-sm-1">
-			<button type="button" class="width-100 pull-right btn btn-sm btn-primary" onclick="SelectData();">
-				<span class="bigger-110">查詢</span>
-			</button>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-sm-12">
-			<table id="grid-table"></table>
-			<div id="grid-pager"></div>
-		</div>
+		
+		<table id="grid-table"></table>
+		<div id="grid-pager"></div>
 	</div>
 </div>
