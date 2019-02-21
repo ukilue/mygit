@@ -137,53 +137,52 @@ function submit_add() {
 	
 }
 </script>
-<fieldset>
-	<legend>新增資料</legend>
+<h3 class="header smaller lighter green">新增資料</h3>
  <!--<form method="post">action="page_maintain_001.php"-->
-	<p>帳號 <input type="text" placeholder="帳號" id="account"></p>
-	<p>密碼 <input type="text" placeholder="密碼" id="password"></p>
-	<p>權限
-		<select id="permission">
-			<option value="2">客戶</option>
-			<option value="3">內部員工</option>
-			<option value="4">管理者</option>
-		</select>
-	</p>
-	<button class="btn btn-app btn-grey btn-xs radius-4" onclick="submit_add();">
-		<i class="ace-icon fa fa-floppy-o bigger-160"></i>
-		Save
-		<span class="badge badge-transparent">
-			<i class="light-red ace-icon fa fa-asterisk"></i>
-		</span>
-	</button>
-	<!--<button type="button" class="width-10 pull-left btn btn-sm btn-primary" onclick="submit_add();">
-		<i class="ace-icon fa fa-key"></i>
-		<span class="bigger-110">新增資料</span>
-	</button>
-	-->
- <!--</form>-->
-</fieldset>
-<p></p>
-<fieldset>
-	<legend>維護資料</legend>
-	<div class="row">
-		<div class="col-xs-12">
-			<div class="row" style="margin-bottom:20px;">
-				<div class="col-xs-6 col-sm-6 col-md-2 col-lg-2">
-					<div class="input-group input-group-sm" style="min-width:200px;">
-						<input type="text" id="keyword" class="form-control" placeholder="輸入關鍵字" style="font-size:16px;height:40px;">
-						<span class="input-group-addon">
-							<i class="ace-icon fa fa-pencil-square-o"></i>
-						</span>
-						<button type="button" class="width-100 pull-right btn btn-sm btn-primary" style="margin-left:10px;height:40px;" onclick="SelectData();">
-							<span class="bigger-110">查詢</span>
-						</button>
-					</div>
-				</div>
-			</div>
-			
-			<table id="grid-table"></table>
-			<div id="grid-pager"></div>
+<form class="form-horizontal" role="form">
+	<div class="form-group">
+		<label class="col-sm-1 control-label no-padding-right" style="width:70px">帳號</label>
+		<div class="col-sm-1">
+			<input type="text" id="account" class="form-control" placeholder="帳號" class="form-control">
 		</div>
 	</div>
-</fieldset>
+	<div class="form-group">
+		<label class="col-sm-1 control-label no-padding-right" style="width:70px">密碼</label>
+		<div class="col-sm-1">
+			<input type="text" id="password" class="form-control" placeholder="密碼" class="form-control">
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-sm-1 control-label no-padding-right" style="width:70px">權限</label>
+		<div class="col-sm-1">
+			<select class="form-control" id="permission">
+				<option value="2">客戶</option>
+				<option value="3">內部員工</option>
+				<option value="4">管理者</option>
+			</select>
+		</div>
+	</div>
+</form>
+<button class="btn btn-lg btn-success" onclick="submit_add();">新增</button>
+<p></p>
+<h3 class="header smaller lighter blue">維護資料</h3>
+<div class="row">
+	<div class="col-xs-12">
+		<div class="row" style="margin-bottom:20px;">
+			<div class="col-xs-6 col-sm-6 col-md-2 col-lg-2">
+				<div class="input-group input-group-sm" style="min-width:200px;">
+					<input type="text" id="keyword" class="form-control" placeholder="輸入關鍵字" style="font-size:16px;height:40px;">
+					<span class="input-group-addon">
+						<i class="ace-icon fa fa-pencil-square-o"></i>
+					</span>
+					<button type="button" class="width-100 pull-right btn btn-sm btn-primary" style="margin-left:10px;height:40px;" onclick="SelectData();">
+						<span class="bigger-110">查詢</span>
+					</button>
+				</div>
+			</div>
+		</div>
+		
+		<table id="grid-table"></table>
+		<div id="grid-pager"></div>
+	</div>
+</div>
