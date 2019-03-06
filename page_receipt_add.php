@@ -25,6 +25,7 @@
 		var year = tomorrow.getFullYear();
 		$( "#datepicker" ).val(year+"/"+month+"/"+day);
 	});
+
 	function func_TypeChange(e)
 	{
 		var div = $(e);
@@ -47,7 +48,7 @@
 		
 		$.ajax({
 			type : "POST", cache : false, dataType : "text",
-			url: "/proc_global.php",
+			url: "/proc_receipt_add.php",
 			data: {	func:'QueryCustomer',ID:ID},
 			success: function (data) {
 				$("#CustomerName" ).val(data);
@@ -60,8 +61,8 @@
 		document.getElementById("owners").innerHTML="";
 		$.ajax({
 			type : "POST", cache : false, dataType : "text",
-			url: "/proc_global.php",
-			data: {	func:'QueryOwnerByCustomerID',ID:ID},
+			url: "/proc_receipt_add.php",
+			data: {	func:'AJAXOwner',ID:ID},
 			success: function (data) {
 				document.getElementById("owners").innerHTML=data;
 			},
@@ -77,6 +78,7 @@
 		var ownerCellphone = $("#Type"+type+"_OwnerCellphone"+num);
 		var ownerPlace = $("#Type"+type+"_OwnerPlace"+num);
 		var ownerNotes = $("#Type"+type+"_OwnerNotes"+num);
+
 		$.ajax({
 			type : "POST", cache : false, dataType : "json",
 			url: "/proc_receipt_add.php",
