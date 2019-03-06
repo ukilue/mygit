@@ -1,16 +1,17 @@
 <?php
+
 	require_once 'db_config.php'; 
 	
 	$func = $_POST["func"];
-	//$conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password, array(PDO::MYSQL_ATTR_INIT_COMMAND => "set names utf8"));
-	$conn = new PDO("sqlsrv:Server=$host;Database=$dbname",$username, $password);
+	$conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password, array(PDO::MYSQL_ATTR_INIT_COMMAND => "set names utf8"));
+	//$conn = new PDO("sqlsrv:Server=$host;Database=$dbname",$username, $password);
 	$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	if ($func == 'add')
 	{
 	//新增資料
 		try
 		{
-			$stmt = $conn->query(" SELECT (Max(ID)+1) as ID FROM momo_DeliveryData ");	//(SELECT IFNULL(Max(GUID), 0)+1 FROM DeliveryData);
+			$stmt = $conn->query(" SELECT IFNULL(Max(ID), 0)+1 as ID FROM DeliveryData ");	//(SELECT IFNULL(Max(GUID), 0)+1 FROM DeliveryData);
 			$Delivery = $stmt->fetch();
 			$stmt->closeCursor();
 			
@@ -20,9 +21,9 @@
 			{
 				
 				$stmt = $conn->prepare(
-						" declare @GUID int ".
-						" SET @GUID = (SELECT Max(GUID)+1 FROM momo_DeliveryData); ".  //SET @GUID = (SELECT IFNULL(Max(GUID), 0)+1 FROM momo_DeliveryData); 
-						" INSERT INTO momo_DeliveryData (GUID,ID,Date,TradeType,CustomerID,PkgOwner,Terminal,PkgCount, ".
+						//" declare @GUID int ".
+						" SET @GUID = (SELECT IFNULL(Max(GUID), 0)+1 FROM DeliveryData); ".
+						" INSERT INTO DeliveryData (GUID,ID,Date,TradeType,CustomerID,PkgOwner,Terminal,PkgCount, ".
 						" Unit,Weight,Volume,Note,ShipName,SO,CloseDate) " .
 						" VALUES (@GUID,:ID,:Date,:TradeType,:CustomerID,:PkgOwner, :Terminal,:PkgCount, ".
 						" :Unit,:Weight,:Volume,:Note,:ShipName,:SO,:CloseDate); "
@@ -59,7 +60,7 @@
 		try
 		{
 			$stmt = $conn->prepare(
-					" SELECT Phone, CellPhone, Address, Notes FROM momo_PkgOwner WHERE Name=:Name"
+					" SELECT Phone, CellPhone, Address, Notes FROM PkgOwner WHERE Name=:Name"
 					);
 			$stmt->bindParam(':Name', $_POST['Name']);
 			$result = $stmt->execute();
@@ -76,6 +77,64 @@
 					$rsp[3] = $row['Notes'];
 				}
 				echo json_encode($rsp);
+			}
+			$stmt->closeCursor();
+		}
+		catch (PDOException $error) 
+		{
+			echo 'connect failed:'.$error->getMessage();
+		}
+	}
+	else if ($func == 'QueryCustomer')
+	{
+		
+		//查詢資料
+		try
+		{
+			$stmt = $conn->prepare(
+					" SELECT Name FROM CustomerData WHERE ID=:ID"
+					);
+			$stmt->bindParam(':ID', $_POST['ID']);
+			$result = $stmt->execute();
+			if (!empty($result))
+			{
+				$data = $stmt->fetchAll();
+				if (sizeof($data) > 0)
+				{
+					echo $data[0]['Name'];
+				}
+				else 
+				{
+					echo '查無資料';
+				}
+			}
+			$stmt->closeCursor();
+		}
+		catch (PDOException $error) 
+		{
+			echo 'connect failed:'.$error->getMessage();
+		}
+	}
+	else if ($func == 'AJAXOwner')
+	{
+		
+		//查詢資料
+		try
+		{
+			$stmt = $conn->prepare(
+					" SELECT Name FROM PkgOwner WHERE CustomerID=:ID"
+					);
+			$stmt->bindParam(':ID', $_POST['ID']);
+			$result = $stmt->execute();
+			$str = "";
+			if (!empty($result))
+			{
+				$data = $stmt->fetchAll();
+				foreach ($data as $row)
+				{
+					$str = $str. "<option>" . $row['Name'] . "</option>";
+				}
+				echo $str;
 			}
 			$stmt->closeCursor();
 		}

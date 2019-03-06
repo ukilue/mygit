@@ -1,3 +1,7 @@
+<!-- 日期 -->
+<script src="/assets/js/jquery-ui.min.js"></script>
+<script src="/assets/js/jquery.ui.touch-punch.min.js"></script>
+
 <script type="text/javascript">
 $.ajax({
 	type : "POST", cache : false, dataType : "json",
@@ -8,12 +12,37 @@ $.ajax({
 		alert("系統異常, 請稍候再試!");
 	}		
 });
+
+jQuery(function($) {			
+	$( "#DeliveryDate" ).datepicker({
+		showOtherMonths: true,
+		selectOtherMonths: false,
+		dateFormat: 'yy/mm/dd',
+	});	
+	$( "#DeliveryDate" ).zIndex(1000);
+});
+function ChangeData()
+{
+	var sdate = $("#DeliveryDate").val();
+}
 function DataLoaded(data)
 {
 	if (data=='')
 	{
-		alert("無下一筆資料需編輯，請自由新增");
+		//alert("無下一筆資料需編輯，請自由新增");
 		$("#AddOwner").attr('style', 'display:inline');
+		//日期
+		var today = new Date();
+		var day = today.getDate();
+		if (day <10) day = "0"+day;
+		var month = today.getMonth()+1;
+		if (month <10) month = "0"+month;
+		var year = today.getFullYear();
+		$( "#DeliveryDate" ).val(year+"/"+month+"/"+day);
+		//terminal
+		$( "#Terminal" ).attr("list","warehouse");
+		//預設新增一筆貨主
+		AddOwner('');
 		return;
 	}
 	var TradeType = data[0]['TradeType'];	//同一編號送貨單應為同一類型(出口或進口)
@@ -81,7 +110,7 @@ function AddOwner(data)
 		"<p>" +
 		"	<input type=\"hidden\" id=\"Type_DeliveryGUID"+OwnerCount+"\" name=\"DeliveryGUID[]\" value=\""+GUID+"\" disabled>&nbsp; " +
 		"	<label name=\"OwnerLabel[]\">"+$str+"</label> "+
-		"	<input type=\"text\" id=\"Type_PkgOwner"+OwnerCount+"\" name=\"Owner[]\" size=\"10px\" value=\""+PkgOwner+"\" >&nbsp; " +
+		"	<input type=\"text\" list=\"owners\" id=\"Type_PkgOwner"+OwnerCount+"\" name=\"Owner[]\" size=\"10px\" value=\""+PkgOwner+"\" onchange=\"ownerChanged('"+OwnerCount+"')\">&nbsp; " +
 		"	<label>送貨地點：</label> "+
 		"	<input type=\"text\" id=\"Type_Country"+OwnerCount+"\" name=\"OwnerPlace[]\" size=\"5px\" value=\""+Country+"\" >&nbsp; "+
 		"	<label>備註：</label> "+
@@ -118,9 +147,9 @@ function AddDriver(pkgnum)
 		"		<label name=\"PriceLabel"+pkgnum+"[]\">金額"+DriverNum+"：</label> "+
 		"		<input type=\"text\" id=\"Type_Price"+pkgnum+"_"+DriverNum+"\" name=\"Price"+pkgnum+"[]\" size=\"5px\">&nbsp; "+
 		"		<label name=\"esPriceLabel"+pkgnum+"[]\">運費表報價"+DriverNum+"：</label> "+
-		"		<input type=\"text\" id=\"Type_esPrice"+pkgnum+"_"+DriverNum+"\" name=\"esPrice"+pkgnum+"[]\" size=\"10px\" > "+
+		"		<input type=\"text\" id=\"Type_esPrice"+pkgnum+"_"+DriverNum+"\" name=\"esPrice"+pkgnum+"[]\" size=\"10px\" disabled > "+
 		"	</p>"+
-		"	<label name=\"lastPriceLabel"+pkgnum+"[]\">※貨主近五筆同車種資料"+DriverNum+"(選擇車種後顯示)：</label> "+
+		"	<label name=\"lastPriceLabel"+pkgnum+"[]\">※貨主近五筆同車種資料(選擇車種後顯示)"+DriverNum+"：</label> "+
 		"	<div id=\"Owner"+pkgnum+"_lastTransport"+DriverNum+"\" name=\"DivlastTransport"+pkgnum+"[]\"></div> "+
 		"</div>"
 	);
@@ -162,14 +191,32 @@ function DelDriver(pkgnum,DriverNum)
 		Label_Car[i].innerHTML = "車種"+(i+1)+"：";
 		Label_Price[i].innerHTML = "金額"+(i+1)+"：";
 		Label_esPrice[i].innerHTML = "運費表報價"+(i+1)+"：";
-		Label_lastPrice[i].innerHTML = "※貨主近五筆同車種資料"+(i+1)+"(選擇車種後顯示)：";
+		Label_lastPrice[i].innerHTML = "※貨主近五筆同車種資料(選擇車種後顯示)"+(i+1)+"：";
 		
 		input_Driver[i].setAttribute("id", "Type_Driver"+pkgnum+"_"+(i+1));
+		input_Driver[i].setAttribute("onchange", "DriverChanged('"+pkgnum+"','"+(i+1)+"');");
 		input_DriverName[i].setAttribute("id", "Type_DriverName"+pkgnum+"_"+(i+1));
 		input_CarType[i].setAttribute("id", "Type_CarType"+pkgnum+"_"+(i+1));
+		input_CarType[i].setAttribute("onchange", "CarTypeChanged('"+pkgnum+"','"+(i+1)+"');");
 		input_Price[i].setAttribute("id", "Type_Price"+pkgnum+"_"+(i+1));
 		input_esPrice[i].setAttribute("id", "Type_esPrice"+pkgnum+"_"+(i+1));
 	}
+}
+function ownerChanged(pkgnum)
+{
+	var Owner = $("#Type_PkgOwner"+pkgnum);
+	var OwnerCountry = $("#Type_Country"+pkgnum);
+	$.ajax({
+		type : "POST", cache : false, dataType : "text",
+		url: "/proc_shipping_add.php",
+		data: {	func:'queryOwnerCountry',Name:Owner.val()},
+		success: function (data) {
+			OwnerCountry.val(data);
+		},
+		error: function () {
+			alert("系統異常, 請稍候再試");
+		}		
+	});
 }
 function CustomerIDChanged()
 {
@@ -178,14 +225,27 @@ function CustomerIDChanged()
 	$.ajax({
 		type : "POST", cache : false, dataType : "text",
 		url: "/proc_shipping_add.php",
-		data: {	func:'queryCustomerID',ID:CustomerID},
+		data: {	func:'queryCustomer',ID:CustomerID},
 		success: function (data) {
-			$("#CustomerID").val(data);
+			$("#CustomerName").val(data);
 		},
 		error: function () {
 			alert("系統異常, 請稍候再試");
 		}		
-	});	
+	});
+
+	document.getElementById("owners").innerHTML="";
+	$.ajax({
+		type : "POST", cache : false, dataType : "text",
+		url: "/proc_receipt_add.php",
+		data: {	func:'AJAXOwner',ID:CustomerID},
+		success: function (data) {
+			document.getElementById("owners").innerHTML=data;
+		},
+		error: function () {
+			alert("系統異常, 請稍候再試");
+		}		
+	});		
 }
 function DriverChanged(pkgnum, DriverNum)
 {
@@ -238,7 +298,7 @@ function CarTypeChanged(pkgnum, DriverNum)
 			else
 			{
 				var innerhtml = 
-					"<table>" + 
+					"<table class=\"table table-striped table-bordered\" >" + 
 					"	<tr>" +
 					"		<td>日期</td>" +
 					"		<td>載運人</td>" +
@@ -266,7 +326,7 @@ function CarTypeChanged(pkgnum, DriverNum)
 					"		<td>"+data[i]['Weight']+"</td>" +
 					"		<td>"+data[i]['Volume']+"</td>" +
 					"		<td>"+data[i]['Price']+"</td>" +
-					"		<td>"+data[i]['notes']+"</td>" + 
+					"		<td>"+data[i]['Notes']+"</td>" + 
 					"	</tr>";
 				}
 				innerhtml = innerhtml+
@@ -349,48 +409,87 @@ function submit_save()
 		
 }
 </script>
-	<p>
+
+<!--貨主資料-->
+<datalist id="owners">
+</datalist>
+<!--貨櫃場資料-->
+<datalist id="warehouse">
+	<option>環球</option>
+	<option>東亞</option>
+	<option>長邦</option>
+	<option>中國</option>
+	<option>興隆</option>
+	<option>台基</option>
+	<option>陽明</option>
+	<option>聯興</option>
+	<option>中華</option>
+	<option>大統</option>
+	<option>中央</option>
+	<option>弘貿</option>
+	<option>永碩</option>
+	<option>台揚</option>
+	<option>長春</option>
+	<option>台聯</option>
+	<option>匯連</option>
+	<option>健泰</option>
+</datalist>
+<form class="form-inline" role="form">
+	<div class="form-group" style="margin-bottom:20px;">
+		<div class="col-sm-6 col-md-2 col-lg-2">
+			<div class="input-group input-group-sm" style="min-width:200px;">
+				<input type="text" id="DeliveryDate" class="form-control" placeholder="請點選日期" style="font-size:16px;height:40px;" >
+				<span class="input-group-addon">
+					<i class="ace-icon fa fa-calendar"></i>
+				</span>
+			</div>
+		</div>
+	</div>
+	<div class="form-group" style="margin-bottom:20px;">
 		載運類型：
-		<!--<input type="text" id="TradeType" size="5px" >-->
 		<select id="TradeType"  onchange="TradeTypeChanged();" >
 			<option value="0">進口</option>
 			<option value="1">出口</option>
 		</select>
+	</div>
+</form>
+<p>
+	<!--日期：<input type="text" id="DeliveryDate" size="10px" >&nbsp;-->
+	客戶：<input type="text" id="CustomerID" onchange="CustomerIDChanged();"  size="5px" >&nbsp;
+	客戶名稱：<input type="text" id="CustomerName" size="8px" disabled>
+</p>
+	<p>
+		件數：<input type="text" id="PkgCount" size="3px" >&nbsp;
+		單位：
+		<!--<input type="text" id="Unit" size="3px" >&nbsp;-->
+		
+			<select id="Unit">
+				<option value="C/T">C/T</option>
+				<option value="C/S">C/S</option>
+				<option value="D/M">D/M</option>
+				<option value="P/L">P/L</option>
+				<option value="P/L">P/L</option>
+				<option value="BOX">BOX</option>
+			</select>&nbsp;
+		重量(kg)：<input type="text" id="Weight" size="3px" >&nbsp;
+		材積：<input type="text" id="Volume" size="3px" >
 	</p>
 	<p>
-		日期：<input type="text" id="DeliveryDate" size="10px" >&nbsp;
-		客戶：<input type="text" id="CustomerID" onchange="CustomerIDChanged();"  size="5px" >&nbsp;
-		客戶名稱：<input type="text" id="CustomerName" size="8px" disabled>
+		<label id="label_Terminal" size="5px">貨櫃場(起運)：</label>
+		<input type="text" id="Terminal" size="8px" >
 	</p>
-	<fieldset>
-		<legend>貨物資料</legend>
-		<p>
-			件數：<input type="text" id="PkgCount" size="3px" >&nbsp;
-			單位：<input type="text" id="Unit" size="3px" >&nbsp;
-			重量(kg)：<input type="text" id="Weight" size="3px" >&nbsp;
-			材積：<input type="text" id="Volume" size="3px" >
-		</p>
-		<p>
-			<label id="label_Terminal" size="5px">貨櫃場(起運)：</label>
-			<input type="text" id="Terminal" size="5px" >
-		</p>
-	</fieldset>
-	
-	<fieldset>
-		<legend>運送資料設定</legend>
-		<button type="button" id="AddOwner" onclick="AddOwner('')" style="display:none">新增貨主</button>
-		<!--進口-->
-		<div id="div_Type" style="display:inline">
-			<div id="div_Type_Owner">
-			</div>
+	<button type="button" id="AddOwner" onclick="AddOwner('')" style="display:none">新增貨主</button>
+	<!--進口-->
+	<div id="div_Type" style="display:inline">
+		<div id="div_Type_Owner">
 		</div>
-		<!--出口-->
-		<!--
-		<div id="div_Type1" style="display:none">
-			<div id="div_Type1_Owner">
-			</div>
+	</div>
+	<!--出口-->
+	<!--
+	<div id="div_Type1" style="display:none">
+		<div id="div_Type1_Owner">
 		</div>
-		-->
-	</fieldset>
-	<p></p>
-	<button type="button" id="btn_save" onclick="submit_save();">儲存資料&編輯次筆</button>
+	</div>
+	-->
+<p></p>
+<button type="button" id="btn_save" onclick="submit_save();">儲存資料&編輯次筆</button>
