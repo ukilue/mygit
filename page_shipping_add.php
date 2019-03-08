@@ -12,7 +12,6 @@ $.ajax({
 		alert("系統異常, 請稍候再試!");
 	}		
 });
-
 jQuery(function($) {			
 	$( "#DeliveryDate" ).datepicker({
 		showOtherMonths: true,
@@ -42,7 +41,7 @@ function DataLoaded(data)
 		//terminal
 		$( "#Terminal" ).attr("list","warehouse");
 		//預設新增一筆貨主
-		AddOwner('');
+		//AddOwner('');
 		return;
 	}
 	var TradeType = data[0]['TradeType'];	//同一編號送貨單應為同一類型(出口或進口)
@@ -62,28 +61,29 @@ function DataLoaded(data)
 	
 	//outerDIV
 	//var outerdiv = $("#div_Type_Owner");
+	//第一筆資料額外輸入
+	if (data.length > 0)
+	{
+		var GUID = data[0]['GUID'];
+		var PkgOwner = data[0]['PkgOwner'];
+		var Country = data[0]['Country'];
+		var Note = data[0]['Note'];
+		$("#Type_DeliveryGUID1").val(GUID);
+		$("#Type_PkgOwner1").val(PkgOwner);
+		$("#Type_Country1").val(Country);
+		$("#Type_Notes1").val(Note);
+		if (TradeType == '1')
+		{
+			$("#label_Terminal").html("到達1：");
+			$("#label_OwnerPlace1").html("起運1");
+		}
+	}
 	
-	var i;
-	for (i = 0; i < data.length; i++)
+	//從第二筆資料動態js
+	var i;	
+	for (i = 1; i < data.length; i++)
 	{
 		AddOwner(data[i]);
-		/*
-		$str = "貨主(到達"+(i+1)+")：";
-		if (TradeType == '1') $str = "貨主(起運)：";
-		outerdiv.append(
-			"<p>" +
-			"	<input type=\"text\" id=\"Type_DeliveryGUID"+(i+1)+"\" name=\"DeliveryGUID[]\" value=\""+data[i]['GUID']+"\" >&nbsp; " +
-			"	<label name=\"OwnerLabel[]\">"+$str+"</label> "+
-			"	<input type=\"text\" id=\"Type_PkgOwner"+(i+1)+"\" name=\"Owner[]\" size=\"10px\" value=\""+data[i]['PkgOwner']+"\" >&nbsp; " +
-			"	<label>送貨地點：</label> "+
-			"	<input type=\"text\" id=\"Type_Country"+(i+1)+"\" name=\"OwnerPlace[]\" size=\"5px\" value=\""+data[i]['Country']+"\" >&nbsp; "+
-			"	<label>備註：</label> "+
-			"	<input type=\"text\" id=\"Type_Notes"+(i+1)+"\" name=\"OwnerNotes[]\" size=\"20px\" value=\""+data[i]['Note']+"\" >&nbsp; "+
-			"	<button type=\"button\" name=\"BtnAddDriver[]\" onclick=\"AddDriver('"+(i+1)+"')\" >新增司機</button> "+
-			"</p>"+
-			"<div id=\"div_Driver"+(i+1)+"\"></div>"
-		);
-		*/
 	}
 	
 	$("#Terminal").val(data[0]['Terminal']);
@@ -93,7 +93,9 @@ function AddOwner(data)
 	var Owners = document.getElementsByName("Owner[]");
 	var OwnerCount = Owners.length + 1;
 	var TradeType = $("#TradeType").val();
-	$str = "貨主(到達"+OwnerCount+")：";
+	$str = "貨主"+OwnerCount+"：";
+	$arrive = "到達"+OwnerCount+"：";
+	$ownerNote = "備註"+OwnerCount+"：";
 	if (TradeType == '1') $str = "貨主(起運)：";
 	
 	var GUID = data['GUID'];
@@ -111,13 +113,18 @@ function AddOwner(data)
 		"	<input type=\"hidden\" id=\"Type_DeliveryGUID"+OwnerCount+"\" name=\"DeliveryGUID[]\" value=\""+GUID+"\" disabled>&nbsp; " +
 		"	<label name=\"OwnerLabel[]\">"+$str+"</label> "+
 		"	<input type=\"text\" list=\"owners\" id=\"Type_PkgOwner"+OwnerCount+"\" name=\"Owner[]\" size=\"10px\" value=\""+PkgOwner+"\" onchange=\"ownerChanged('"+OwnerCount+"')\">&nbsp; " +
-		"	<label>送貨地點：</label> "+
+		"	<label name=\"OwnerPlace[]\">"+$arrive+"</label> "+
 		"	<input type=\"text\" id=\"Type_Country"+OwnerCount+"\" name=\"OwnerPlace[]\" size=\"5px\" value=\""+Country+"\" >&nbsp; "+
-		"	<label>備註：</label> "+
-		"	<input type=\"text\" id=\"Type_Notes"+OwnerCount+"\" name=\"OwnerNotes[]\" size=\"20px\" value=\""+Note+"\" >&nbsp; "+
+		"</p>"
+	);
+	var driverdiv = $("#div_Type_Driver");
+	driverdiv.append(
+		"	<label>"+$str+"</label> "+
 		"	<button type=\"button\" name=\"BtnAddDriver[]\" onclick=\"AddDriver('"+OwnerCount+"')\" >新增司機</button> "+
-		"</p>"+
-		"<div id=\"div_Driver"+OwnerCount+"\"></div>"
+		"<div id=\"div_Driver"+OwnerCount+"\"></div>"+
+		"	<label>"+$ownerNote+"</label> "+
+		"	<input type=\"text\" id=\"Type_Notes"+OwnerCount+"\" name=\"OwnerNotes[]\" size=\"50px\" value=\""+Note+"\" >&nbsp; "+
+		"<p></p>"
 	);
 }
 function AddDriver(pkgnum)
@@ -233,7 +240,6 @@ function CustomerIDChanged()
 			alert("系統異常, 請稍候再試");
 		}		
 	});
-
 	document.getElementById("owners").innerHTML="";
 	$.ajax({
 		type : "POST", cache : false, dataType : "text",
@@ -457,39 +463,55 @@ function submit_save()
 	<!--日期：<input type="text" id="DeliveryDate" size="10px" >&nbsp;-->
 	客戶：<input type="text" id="CustomerID" onchange="CustomerIDChanged();"  size="5px" >&nbsp;
 	客戶名稱：<input type="text" id="CustomerName" size="8px" disabled>
+	<input type="hidden" id="Type_DeliveryGUID1" name="DeliveryGUID[]" value="" disabled>
+	<label name="OwnerLabel[]">貨主1：</label>
+	<input type="text" list="owners" id="Type_PkgOwner1" name="Owner[]" size="10px" value="" onchange="ownerChanged('1')">
 </p>
-	<p>
-		件數：<input type="text" id="PkgCount" size="3px" >&nbsp;
-		單位：
-		<!--<input type="text" id="Unit" size="3px" >&nbsp;-->
-		
-			<select id="Unit">
-				<option value="C/T">C/T</option>
-				<option value="C/S">C/S</option>
-				<option value="D/M">D/M</option>
-				<option value="P/L">P/L</option>
-				<option value="P/L">P/L</option>
-				<option value="BOX">BOX</option>
-			</select>&nbsp;
-		重量(kg)：<input type="text" id="Weight" size="3px" >&nbsp;
-		材積：<input type="text" id="Volume" size="3px" >
-	</p>
-	<p>
-		<label id="label_Terminal" size="5px">貨櫃場(起運)：</label>
-		<input type="text" id="Terminal" size="8px" >
-	</p>
+<p>
+	<label id="label_Terminal" size="5px">貨櫃場(起運)：</label>
+	<input type="text" id="Terminal" size="8px" >
+	<label id="label_OwnerPlace1" name="OwnerPlace[]">到達1：</label>
+	<input type="text" id="Type_Country1" name="OwnerPlace[]" size="5px" value="" >&nbsp; 
 	<button type="button" id="AddOwner" onclick="AddOwner('')" style="display:none">新增貨主</button>
-	<!--進口-->
-	<div id="div_Type" style="display:inline">
-		<div id="div_Type_Owner">
-		</div>
+	<div id="div_Type_Owner">
 	</div>
-	<!--出口-->
-	<!--
-	<div id="div_Type1" style="display:none">
-		<div id="div_Type1_Owner">
-		</div>
+</p>
+<p>
+	件數：<input type="text" id="PkgCount" size="3px" >&nbsp;
+	單位：
+	<!--<input type="text" id="Unit" size="3px" >&nbsp;-->
+	
+		<select id="Unit">
+			<option value="C/T">C/T</option>
+			<option value="C/S">C/S</option>
+			<option value="D/M">D/M</option>
+			<option value="P/L">P/L</option>
+			<option value="P/L">P/L</option>
+			<option value="BOX">BOX</option>
+		</select>&nbsp;
+	重量(kg)：<input type="text" id="Weight" size="3px" >&nbsp;
+	材積：<input type="text" id="Volume" size="3px" >
+</p>
+<div id="div_Type_Driver">
+	<label>貨主1：</label>
+	<button type="button" name="BtnAddDriver[]" onclick="AddDriver('1')" >新增司機</button>
+	<div id="div_Driver1"></div>
+	<label>備註1：</label>
+	<input type="text" id="Type_Notes1" name="OwnerNotes[]" size="50px" value="" >
+	<p></p>
+</div>
+<!--進口-->
+<!--<div id="div_Type" style="display:inline">
+	<div id="div_Type_Owner">
 	</div>
-	-->
+	
+</div>-->
+<!--出口-->
+<!--
+<div id="div_Type1" style="display:none">
+	<div id="div_Type1_Owner">
+	</div>
+</div>
+-->
 <p></p>
 <button type="button" id="btn_save" onclick="submit_save();">儲存資料&編輯次筆</button>
